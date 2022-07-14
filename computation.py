@@ -15,7 +15,7 @@ class Computation:
         for node1 in self.test.keys():
             for node2 in  self.test.keys():
                 if self.test[node1]!= self.test[node2][node1]:
-                    self.graph.add_edge(node1,node2,self.test[node1][node2])
+                    self.graph.add_edge(node1,node2,weight = self.test[node1][node2])
         
     def scan_graph(self):
         arb_checks = []
