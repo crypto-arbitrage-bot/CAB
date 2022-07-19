@@ -4,4 +4,4 @@ class API:
         #self.age = age Sets to global variable
       
     def myfunc(self):
-        print("Hello this is a function in API")
+        return "03:30:23"
