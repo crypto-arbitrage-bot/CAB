@@ -1,26 +1,26 @@
 from abc import ABC, abstractmethod
 
-class abstractAPI(ABC):
+class APIOption(ABC):
   @abstractmethod
   def retrieve_data(self):
     pass
 
-class CoinGecko(abstractAPI):
+class CoinGecko(APIOption):
   # override abstract method retrieve_data()
   def retrieve_data(self):
     print("CoinGecko retrieve_data()")
 
-class Coinbase(abstractAPI):
+class Coinbase(APIOption):
   # override abstract method retrieve_data()
   def retrieve_data(self):
     print("Coinbase retrieve_data()")
 
-class FTX(abstractAPI):
+class FTX(APIOption):
   # override abstract method retrieve_data()
   def retrieve_data(self):
     print("FTX retrieve_data()")
 
-class Binance(abstractAPI):
+class Binance(APIOption):
   # override abstract method retrieve_data()
   def retrieve_data(self):
     print("Binance retrieve_data()")
