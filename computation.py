@@ -32,8 +32,10 @@ class Computation:
                 factor = path_weight1 * path_weight2 #checks profitability
                 arb_checks.append((path, factor))#Add Link with Profitibility
 
-        arb_checks = pd.DataFrame(arb_checks, columns=['Path', 'Result'])        
-        print(arb_checks.sort_values(by='Result', ascending=False))
+        arb_checks = pd.DataFrame(arb_checks, columns=['Path', 'Result'])   
+        arb_checks = arb_checks[arb_checks['Result'] > 1.0]      
+        arb_checks =arb_checks.sort_values(by='Result', ascending=False)
+        return arb_checks
         
 obj = Computation()
 obj.generate_graph()
