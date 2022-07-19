@@ -1,4 +1,5 @@
 import sys
+import tkinter
 from api import API
 from history import History
 from computation import Computation
@@ -25,6 +26,7 @@ def running_click(table):
     api_obj = API()
     time = api_obj.myfunc() #get time from API
     history_obj = History()
+    history_obj.myfunc()
     computation_obj = Computation()
     computation_obj.generate_graph()
     exchange = "TEST EXCHANGE"
@@ -63,6 +65,7 @@ def generate_gui():
   
    # ttk.Label(tab1, text ="HOME Content Here").grid(column = 0, row = 0,padx = 30,pady = 30)  
    # ttk.Label(tab2,text ="HISTORY Content Here").grid(column = 0,row = 0, padx = 30,pady = 30)
+
     game_frame = Frame(tab1)
     game_frame.pack()
     #scrollbar
