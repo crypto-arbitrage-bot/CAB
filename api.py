@@ -49,5 +49,20 @@ class API:
         
         return(results_dict)
     
+    def binance(self):
+        # https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT
+        list1 = ['BCH','ETH','BTC','LTC', 'EOS']
+        for coin in list1:
+            base = 'https://api.binance.com/api/v3/avgPrice?symbol='
+            for coin1 in list1:
+                if coin != coin1:
+                    base = base + coin + coin1
+                    request = requests.get(base) 
+                    results_dict = json.loads(request.text)
+                    print(results_dict)
+        return 0
+
 api = API()
-api.coingecko()
+#api.coingecko()
+
+api.binance()

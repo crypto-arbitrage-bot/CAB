@@ -8,43 +8,68 @@ from tkinter import *
 from tkinter import ttk
 import pandas as pd
         
-def sel(num):
-    selection = "You selected the option " + str(num)
+def sel():
+    selection = "You selected the option " + str(api_var.get())
     global selected_option 
-    selected_option= num
+    selected_option= int(api_var.get())
     print(selection)
     
-def hel(num):
-    selection = "You selected the option " + str(num)
-    global sort_option
-    sort_option = num
-    print(selection)
+def hel():
+    if(sort_type.get() == 1):
+        print("Sort by time")
+        data = history_obj.get_history().sort_values(by='Time', ascending=order_type.get())
+    if(sort_type.get() == 2):
+        print("Sort by Exchange")
+        data = history_obj.get_history().sort_values(by='Exchange',ascending=order_type.get())
+    if(sort_type.get() == 3):
+        print("Sort by Profitability")
+        data = history_obj.get_history().sort_values(by='Profitability', ascending=order_type.get())
+    history_update_table(data)
     
 def history_tab_clicked(event):
     tab = event.widget.tab('current')['text']
     if tab =='History':
         print("History clicked")
         data = history_obj.get_history()
-        update_table(table2,data)
+        history_update_table(data)
     return
-    
-def update_table(table,data):
+
+def history_update_table(data):
     # code for updating table
     #delete old data
-    for i in table.get_children():
-        table.delete(i)
+    
+    for i in table2.get_children():
+        table2.delete(i)
     count_row = data.shape[0]
     for i in range(count_row):
         first_v =data['Time'].values[i]
         second_v = data['Exchange'].values[i]
         third_v = data['Path'].values[i]
         fourth_v = data['Profitability'].values[i]
-        table.insert(parent='',index='end',iid=i,text='',values=(first_v,second_v,third_v,fourth_v))
+        table2.insert(parent='',index='end',iid=i,text='',values=(first_v,second_v,third_v,fourth_v))
         
-    table.pack()
-    table.update()
+    table2.pack()
+    table2.update()
+
+def running_update_table(data):
+    # code for updating table
+    #delete old data
     
-def running_click(table):
+    for i in table1.get_children():
+        table1.delete(i)
+    count_row = data.shape[0]
+    for i in range(count_row):
+        first_v =data['Time'].values[i]
+        second_v = data['Exchange'].values[i]
+        third_v = data['Path'].values[i]
+        fourth_v = data['Profitability'].values[i]
+        table1.insert(parent='',index='end',iid=i,text='',values=(first_v,second_v,third_v,fourth_v))
+        
+    table1.pack()
+    table1.update()
+    
+    
+def running_click():
     print("Running clicked")   
     global data
     data = api_obj.coingecko()    
@@ -60,8 +85,18 @@ def running_click(table):
         exchange = "FTX"
     if(selected_option == 4):
         exchange = "Binance"
-    data = computation_obj.scan_graph() #data hold link with profitibility
+    data = computation_obj.scan_graph() #data hold link with profitibility        
     complete_data = pd.DataFrame()
+   # if(len(data)==0):
+   #     empty_data = {
+   #         "Time": "No data",
+   #         "Exchange": exchange,
+   #         "Path": "No data",
+   #         "Profitability": "No data"
+   #     }
+   #     empty_data_df = pd.DataFrame(empty_data)
+    #    complete_data =pd.concat([complete_data, empty_data_df])
+    #else:
     for row in range(len(data)):
         full_data = {
             "Time": time,
@@ -70,10 +105,9 @@ def running_click(table):
             "Profitability": data['Result'].values[row]
         }
         full_data_df = pd.DataFrame(full_data)
-        complete_data =pd.concat([complete_data, full_data_df])
-        #print(complete_data)
+        complete_data =pd.concat([complete_data, full_data_df])        
     history_obj.append_history(complete_data)
-    update_table(table,complete_data)
+    running_update_table(complete_data)
     return
     
     
@@ -101,14 +135,14 @@ tabControl.add(tab1, text ='Home')
 tabControl.add(tab2, text ='History')
 tabControl.pack(expand = 1, fill ="both")
 
-var = IntVar()
-R1 = Radiobutton(tab1, text="CoinGecko", variable=var, value=1,command=sel(1))
+api_var = IntVar()
+R1 = Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=sel)
 R1.pack( anchor = W )
-R2 = Radiobutton(tab1, text="Coinbase", variable=var, value=2,command=sel(2))
+R2 = Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=sel)
 R2.pack( anchor = W )
-R3 = Radiobutton(tab1, text="FTX", variable=var, value=3,command=sel(3))
+R3 = Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=sel)
 R3.pack( anchor = W)
-R4 = Radiobutton(tab1, text="Binance", variable=var, value=4,command=sel(4))
+R4 = Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=sel)
 R4.pack( anchor = W)
 game_frame = Frame(tab1)
 
@@ -116,7 +150,7 @@ game_frame = Frame(tab1)
 game_scroll = Scrollbar(game_frame)
 game_scroll.pack(side=RIGHT, fill=Y)
 table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=5)
-start_running_button = Button(tab1, text ="Start Running", command = running_click(table1))
+start_running_button = Button(tab1, text ="Start Running", command = running_click)
 start_running_button.pack(anchor = E)
 table1.pack()
 game_frame.pack()
@@ -142,12 +176,12 @@ table1.pack()
 filters_frame = Frame(tab2)
 sort_frame = Frame(filters_frame)    
 sort_frame.pack(anchor = W,side='left')
-var = IntVar()
-sort1 = Radiobutton(sort_frame, text="Time", variable=var, value=1,command=hel(1))
+sort_type = IntVar()
+sort1 = Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=hel)
 sort1.pack( anchor = W )
-sort2 = Radiobutton(sort_frame, text="Exchange", variable=var, value=2,command=hel(2))
+sort2 = Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=hel)
 sort2.pack( anchor = W )
-sort3 = Radiobutton(sort_frame, text="Profitibility", variable=var, value=3,command=hel(3))
+sort3 = Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=hel)
 sort3.pack( anchor = W)
 #Dates Within
 dates_frame = Frame(filters_frame)    
@@ -160,10 +194,10 @@ date2.pack( anchor = W )
 #ORDER
 order_frame = Frame(filters_frame)    
 order_frame.pack(anchor = W,side='left')
-order_type = IntVar()
-order1 = Radiobutton(order_frame, text="Ascending", variable=order_type, value=1)
+order_type = BooleanVar()
+order1 = Radiobutton(order_frame, text="Ascending", variable=order_type, value=True,command=hel)
 order1.pack( anchor = W )
-order2 = Radiobutton(order_frame, text="Descending", variable=order_type, value=2)
+order2 = Radiobutton(order_frame, text="Descending", variable=order_type, value=False,command=hel)
 order2.pack( anchor = W )
 filters_frame.pack()
 #TABLE FRAME
