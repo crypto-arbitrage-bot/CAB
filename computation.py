@@ -12,6 +12,7 @@ class Computation:
     def generate_graph(self):
         print("Hello this is a function in Computation")
         self.graph = nx.DiGraph()
+
         for node1 in self.test.keys():
             for node2 in  self.test.keys():
                 if self.test[node1]!= self.test[node2][node1]:
