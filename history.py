@@ -8,6 +8,10 @@ class History:
         self.filename = filename
       
     def get_history(self):
+        file_exists = exists(self.filename + ".xlsx")
+        if(file_exists):
+            data= pd.read_excel(self.filename + ".xlsx", sheet_name='a')
+            self.history = pd.concat([self.history, data])
         return self.history
     
     def append_history(self, data):
