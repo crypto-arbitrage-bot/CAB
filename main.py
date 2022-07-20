@@ -13,7 +13,9 @@ def sel():
     global selected_option 
     selected_option= int(api_var.get())
     print(selection)
-    
+
+def export_history_click():
+    history_obj.export_history()
 def hel():
     if(sort_type.get() == 1):
         print("Sort by time")
@@ -186,14 +188,14 @@ sort3.pack( anchor = W)
 #Dates Within
 dates_frame = Frame(filters_frame)    
 dates_frame.pack(anchor = W,side='left')
-date_type = IntVar()
-date1 = Radiobutton(dates_frame, text="None", variable=date_type, value=1)
-date1.pack( anchor = W )
-date2 = Radiobutton(dates_frame, text="From Date To Date", variable=date_type, value=2)
-date2.pack( anchor = W )
+#date_type = IntVar()
+#date1 = Radiobutton(dates_frame, text="None", variable=date_type, value=1,command=hel)
+#date1.pack( anchor = W )
+#date2 = Radiobutton(dates_frame, text="From Date To Date", variable=date_type, value=2,command=hel)
+#date2.pack( anchor = W )
 #ORDER
 order_frame = Frame(filters_frame)    
-order_frame.pack(anchor = W,side='left')
+order_frame.pack(anchor = W,side='right')
 order_type = BooleanVar()
 order1 = Radiobutton(order_frame, text="Ascending", variable=order_type, value=True,command=hel)
 order1.pack( anchor = W )
@@ -216,7 +218,7 @@ table2.column("#0", width=0,  stretch=NO)
 table2.column("Time",anchor=CENTER, width=80)
 table2.column("Exchange",anchor=CENTER,width=80)
 table2.column("Profit Link",anchor=CENTER,width=160)
-table2.column("Profitibility",anchor=CENTER,width=100)
+table2.column("Profitibility",anchor=CENTER,width=120)
 #Create Headings 
 table2.heading("#0",text="",anchor=CENTER)
 table2.heading("Time",text="Time",anchor=CENTER)
@@ -224,7 +226,7 @@ table2.heading("Exchange",text="Exchange",anchor=CENTER)
 table2.heading("Profit Link",text="Profit Link",anchor=CENTER)
 table2.heading("Profitibility",text="Profitibility",anchor=CENTER)
 table2.pack()
-export_history = Button(tab2, text ="Export History", command = history_obj.export_history())
+export_history = Button(tab2, text ="Export History", command = export_history_click)
 export_history.pack()
 print("2 Tables created")
 tabControl.bind('<<NotebookTabChanged>>', history_tab_clicked)

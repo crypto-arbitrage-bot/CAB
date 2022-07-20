@@ -8,7 +8,9 @@ class History:
         self.filename = filename
       
     def get_history(self):
+        
         file_exists = exists(self.filename + ".xlsx")
+        print("Get history")
         if(file_exists):
             data= pd.read_excel(self.filename + ".xlsx", sheet_name='a')
             self.history = pd.concat([self.history, data])
@@ -16,10 +18,12 @@ class History:
     
     def append_history(self, data):
         self.history = pd.concat([self.history, data])
+        print("Append history")
         
     def export_history(self):
         file_exists = exists(self.filename + ".xlsx")
-        if file_exists: os.remove(self.filename + ".xlsx")
+        print("Export history")
+        print(self.history)
         self.history.to_excel(self.filename + ".xlsx", sheet_name='a', index = False)
 
 # for testing

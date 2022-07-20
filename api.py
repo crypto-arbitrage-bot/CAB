@@ -62,7 +62,31 @@ class API:
                     print(results_dict)
         return 0
 
-api = API()
+    def coinbase(self):
+        # https://api.coinbase.com/v2/prices/BTC-USD/spot
+        # {"data":{"base":"BTC","currency":"USD","amount":"23128.76"}}
+        list1 = ['BCH','ETH','BTC','LTC', 'EOS']
+        for coin in list1:
+            base = 'https://api.coinbase.com/v2/prices/'
+            base += coin + '-USD/spot'
+            request = requests.get(base) 
+            results_dict = json.loads(request.text)
+        # price_list = [xxx, xxx, xxx, xxx, xxx]
+
+
+        print(results_dict)
+
+
+        return 0
+
+    #def kucoin(self):
+            # https://api.kucoin.com/api/v1/market/histories?symbol=ETH-USDT
+        #return 0
+    #def kraken(self):
+            # https://api.kraken.com/0/public/Trades?pair=BTCUSDT
+
+        #return 0    
+#api = API()
 #api.coingecko()
 
-api.binance()
+#api.coinbase()
