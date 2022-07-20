@@ -38,6 +38,6 @@ class Computation:
         arb_checks =arb_checks.sort_values(by='Result', ascending=False)
         return arb_checks
         
-obj = Computation()
-obj.generate_graph()
-obj.scan_graph()
+#obj = Computation()
+#obj.generate_graph()
+#obj.scan_graph()
