@@ -10,8 +10,8 @@ class API:
     def get_time(self):
         return self.time
     def coingecko(self):
-        id_list = ['bitcoin-cash', 'ethereum', 'bitcoin','litecoin', 'eos']
-        vs_currencies_list = ['bch','eth','btc','ltc', 'eos']
+        id_list = ['bitcoin-cash', 'ethereum', 'bitcoin','litecoin', 'eos','ripple','polkadot']
+        vs_currencies_list = ['bch','eth','btc','ltc', 'eos','xrp','dot']
         base = 'https://api.coingecko.com/api/v3/simple/price?ids='       
         id_remaining = len(id_list)
         for coin in id_list:
@@ -44,6 +44,12 @@ class API:
                 del results_dict[coin]
             if(coin == 'litecoin'):
                 results_dict['ltc'] = results_dict['litecoin']
+                del results_dict[coin]
+            if(coin == 'ripple'):
+                results_dict['xrp'] = results_dict['ripple']
+                del results_dict[coin]
+            if(coin == 'polkadot'):
+                results_dict['dot'] = results_dict['polkadot']
                 del results_dict[coin]
         print(results_dict)
         
