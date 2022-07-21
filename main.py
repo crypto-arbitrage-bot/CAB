@@ -74,8 +74,10 @@ def running_update_table(data):
 def running_click():
     print("Running clicked")   
     global data
-    data = api_obj.coingecko()    
-    time = api_obj.get_time()        
+    api_obj = API(selected_option)
+    full_data = api_obj.get_data()
+    time = full_data[0]
+    data = full_data[1]       
     computation_obj = Computation(crypto_data=data)
     computation_obj.generate_graph()
     exchange = "TEST"
@@ -117,7 +119,7 @@ def running_click():
 data =[]
 selected_option = 0
 sort_option =0
-api_obj = API()        
+api_obj = API(selected_option)        
 history_obj = History()
 computation_obj = Computation()
 window = Tk()
