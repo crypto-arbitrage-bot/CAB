@@ -77,7 +77,8 @@ def running_click():
     api_obj = API(selected_option)
     full_data = api_obj.get_data()
     time = full_data[0]
-    data = full_data[1]       
+    data = full_data[1]
+    print(data)
     computation_obj = Computation(crypto_data=data)
     computation_obj.generate_graph()
     exchange = "TEST"

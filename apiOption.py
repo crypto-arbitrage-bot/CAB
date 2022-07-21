@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import re
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 class APIOption(ABC):
   @abstractmethod
@@ -53,7 +54,7 @@ class CoinGecko(APIOption):
         if(coin == 'polkadot'):
             results_dict['dot'] = results_dict['polkadot']
             del results_dict[coin]
-    print(results_dict)
+    #print(results_dict)
     
     return((time,results_dict))
 
@@ -62,17 +63,43 @@ class Coinbase(APIOption):
   def retrieve_data(self):
     # https://api.coinbase.com/v2/prices/BTC-USD/spot
     # {"data":{"base":"BTC","currency":"USD","amount":"23128.76"}}
-    list1 = ['BCH','ETH','BTC','LTC', 'EOS']
-    for coin in list1:
+    
+    symbol = ['BCH','ETH','BTC','LTC','EOS']
+    
+    price = []
+    return_dict = {}
+    
+    for coin in symbol:
+        return_dict[coin.lower()] = {}
+        
+    for coin in symbol:
         base = 'https://api.coinbase.com/v2/prices/'
         base += coin + '-USD/spot'
+        # print(base)
         request = requests.get(base) 
-        results_dict = json.loads(request.text)
-    # price_list = [xxx, xxx, xxx, xxx, xxx]
+        tmp = json.loads(request.text)
+        price.append(float(tmp['data']['amount']))
+    
+    for coin in return_dict:
+        for sub_coin in symbol:
+            (return_dict[coin])[sub_coin.lower()] = price[symbol.index(coin.upper())] / price[symbol.index(sub_coin.upper())]
+    
+    request = requests.get("https://api.coinbase.com/v2/time")
+    tmp = json.loads(request.text)
+    time = float(tmp['data']['epoch'])
+    time = datetime.utcfromtimestamp(time)
+    timeString = ""
+    if time.hour < 10: timeString += "0"
+    timeString += str(time.hour)
+    timeString += ":"
+    if time.minute < 10: timeString += "0"
+    timeString += str(time.minute)
+    timeString += ":"
+    if time.second < 10: timeString += "0"
+    timeString += str(time.second)
 
-    print(results_dict)
-
-    return 0
+    #print(return_dict)
+    return ((timeString, return_dict))
 
 class FTX(APIOption):
   # override abstract method retrieve_data()
@@ -107,10 +134,7 @@ class Kraken(APIOption):
     print("Kraken retrieve_data()")
 
 # driver code
-# selected_option = 3
-# apiOption = CoinGecko()
-# if selected_option == 0: apiOption = CoinGecko()
-# if selected_option == 1: apiOption = Coinbase()
-# if selected_option == 2: apiOption = FTX()
-# if selected_option == 3: apiOption = Binance()
-# apiOption.retrieve_data()
+apiOption = CoinGecko()
+apiOption.retrieve_data()
+apiOption = Coinbase()
+apiOption.retrieve_data()
