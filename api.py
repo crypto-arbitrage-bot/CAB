@@ -11,6 +11,7 @@ class API:
     def get_time(self):
         return self.time
     def coingecko(self):
+        #generate the link to send to coingecko api
         id_list = ['bitcoin-cash', 'ethereum', 'bitcoin','litecoin', 'eos','ripple','polkadot']
         vs_currencies_list = ['bch','eth','btc','ltc', 'eos','xrp','dot']
         base = 'https://api.coingecko.com/api/v3/simple/price?ids='       
@@ -27,12 +28,15 @@ class API:
             vs_remaining -= 1
             if vs_remaining > 0:
                 base += ','
+        #make request
         request = requests.get(base)  
+        #get the date
         value = request.headers['Date']
         print(value)
         result = re.findall("\w\w\:\w\w\:\w\w", value)
         self.time = result[0]
         results_dict = json.loads(request.text)
+        #replace name with ticker
         for coin in id_list:
             if(coin == 'bitcoin-cash'):
                 results_dict[coin]= results_dict['bitcoin-cash']
@@ -55,7 +59,7 @@ class API:
         print(results_dict)
         
         return(results_dict)
-    
+    #get data from bianace api
     def binance(self):
         # https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT
         list1 = ['BCH','ETH','BTC','LTC', 'EOS']
@@ -68,7 +72,7 @@ class API:
                     results_dict = json.loads(request.text)
                     print(results_dict)
         return 0
-
+    #get data from coinbase api
     def coinbase(self):
         # https://api.coinbase.com/v2/prices/BTC-USD/spot
         # {"data":{"base":"BTC","currency":"USD","amount":"23128.76"}}

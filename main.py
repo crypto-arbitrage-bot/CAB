@@ -7,15 +7,19 @@ from computation import Computation
 from tkinter import *
 from tkinter import ttk
 import pandas as pd
-        
+
+#handles API selection clicks        
 def sel():
     selection = "You selected the option " + str(api_var.get())
     global selected_option 
     selected_option= int(api_var.get())
     print(selection)
-
+    
+#Handles export history clicks
 def export_history_click():
     history_obj.export_history()
+
+#Handles History Filter clicks
 def hel():
     if(sort_type.get() == 1):
         print("Sort by time")
@@ -27,7 +31,8 @@ def hel():
         print("Sort by Profitability")
         data = history_obj.get_history().sort_values(by='Profitability', ascending=order_type.get())
     history_update_table(data)
-    
+
+#handles history tab clicks
 def history_tab_clicked(event):
     tab = event.widget.tab('current')['text']
     if tab =='History':
@@ -36,6 +41,7 @@ def history_tab_clicked(event):
         history_update_table(data)
     return
 
+#updates history table
 def history_update_table(data):
     # code for updating table
     #delete old data
@@ -53,6 +59,7 @@ def history_update_table(data):
     table2.pack()
     table2.update()
 
+#updates table on HOME tab
 def running_update_table(data):
     # code for updating table
     #delete old data
@@ -70,7 +77,7 @@ def running_update_table(data):
     table1.pack()
     table1.update()
     
-    
+#Handles start running clicks    
 def running_click():
     print("Running clicked")   
     global data
