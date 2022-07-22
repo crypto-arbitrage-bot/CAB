@@ -114,23 +114,16 @@ def running_click():
     return
     
 def update_theme():
-    global bgColor, textColor, themeButtonBgColor, themeButtonTextColor, themeButtonText, darkMode, themeButtonExists
-    global themeButton
+    global bgColor, textColor, themeButtonImage, darkMode, themeButton
 
     # update global variables
     if darkMode == False:
-        bgColor = 'black'
+        bgColor = '#292929'
         textColor = 'white'
-        themeButtonBgColor = 'white'
-        themeButtonTextColor = 'black'
-        themeButtonText = "Enable Light Mode"
         darkMode = True
     else:
         bgColor = 'white'
         textColor = 'black'
-        themeButtonBgColor = 'black'
-        themeButtonTextColor = 'white'
-        themeButtonText = "Enable Dark Mode"
         darkMode = False
 
     # update TFrame style
@@ -207,22 +200,21 @@ def update_theme():
         )
 
     # update ThemeButton style
-    style.configure('ThemeButton.TButton', background=themeButtonBgColor, foreground=themeButtonTextColor)
     if darkMode == False:
+        style.configure("ThemeButton.TButton", background="white")
         style.map('ThemeButton.TButton',
-        background=[('pressed', bgColor),
-                    ('active', '#333333')],
-        foreground=[('pressed', textColor),
-                    ('active', themeButtonTextColor)]
-        )
+            background=[('pressed', 'white'),
+                        ('active', 'white')])
+        themeButtonImage = PhotoImage(file = "dark_mode.png")
+        themeButton['image'] = themeButtonImage
     else:
+        style.configure("ThemeButton.TButton", background='#333333')
         style.map('ThemeButton.TButton',
-        background=[('pressed', bgColor),
-                    ('active', '#e8e8e8')],
-        foreground=[('pressed', textColor),
-                    ('active', themeButtonTextColor)]
-        )
-    if themeButtonExists == True: themeButton['text'] = themeButtonText
+            background=[('pressed', '#333333'),
+                        ('active', '#333333')])
+        themeButtonImage = PhotoImage(file = "light_mode.png")
+        themeButton['image'] = themeButtonImage
+
 
     # update window style
     window.configure(bg=bgColor)
@@ -238,10 +230,7 @@ computation_obj = Computation()
 darkMode = True
 bgColor = ''
 textColor = ''
-themeButtonBgColor = ''
-themeButtonTextColor = ''
-themeButtonText = ""
-themeButtonExists = False
+themeButtonImage = ''
 
 window = Tk()
 window.title("CAB APPLICATION")
@@ -256,11 +245,12 @@ tabControl = ttk.Notebook(window)
 style = ttk.Style()
 style.theme_use('default')
 
+windowExists = True
+
 # theme button
-themeButton = ttk.Button(window, text = themeButtonText, command = update_theme, style="ThemeButton.TButton")
+themeButton = ttk.Button(window, command = update_theme, style="ThemeButton.TButton", image=themeButtonImage)
 themeButton['cursor'] = 'hand2'
 themeButton.pack()
-themeButtonExists = True
 
 update_theme()
 
