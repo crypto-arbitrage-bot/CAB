@@ -1,3 +1,4 @@
+from os import stat
 from select import select
 import sys
 import tkinter
@@ -112,23 +113,156 @@ def running_click():
     running_update_table(complete_data)
     return
     
+def update_theme():
+    global bgColor, textColor, themeButtonBgColor, themeButtonTextColor, themeButtonText, darkMode, themeButtonExists
+    global themeButton
+
+    # update global variables
+    if darkMode == False:
+        bgColor = 'black'
+        textColor = 'white'
+        themeButtonBgColor = 'white'
+        themeButtonTextColor = 'black'
+        themeButtonText = "Enable Light Mode"
+        darkMode = True
+    else:
+        bgColor = 'white'
+        textColor = 'black'
+        themeButtonBgColor = 'black'
+        themeButtonTextColor = 'white'
+        themeButtonText = "Enable Dark Mode"
+        darkMode = False
+
+    # update TFrame style
+    style.configure('TFrame', background=bgColor)
+
+    # update TButton style
+    style.configure('TButton', background=bgColor, foreground=textColor)
+    if darkMode == False:
+        style.map('TButton',
+        background=[('pressed', '#e8e8e8'),
+                    ('active', '#e8e8e8')],
+        foreground=[('pressed', 'black'),
+                    ('active', 'black')]
+        )
+    else:
+        style.map('TButton',
+        background=[('pressed', '#333333'),
+                    ('active', '#333333')],
+        foreground=[('pressed', 'white'),
+                    ('active', 'white')]
+        )
+
+    # update TRadiobutton style
+    style.configure('TRadiobutton', background=bgColor, foreground=textColor)
+    if darkMode == False:
+        style.map('TRadiobutton',
+        background=[('pressed', '#e8e8e8'),
+                    ('active', '#e8e8e8')],
+        foreground=[('pressed', 'black'),
+                    ('active', 'black')]
+        )
+    else:
+        style.map('TRadiobutton',
+        background=[('pressed', '#333333'),
+                    ('active', '#333333')],
+        foreground=[('pressed', 'white'),
+                    ('active', 'white')]
+        )
     
+    # Update Treeview style
+    style.configure('Treeview', background=bgColor, foreground=textColor, fieldbackground=bgColor)
+    style.configure('Treeview.Heading', background=bgColor, foreground=textColor, fieldbackground=bgColor)
+    if darkMode == False:
+        style.map('Treeview.Heading',
+        background=[('pressed', '#e8e8e8'),
+                    ('active', '#e8e8e8')],
+        foreground=[('pressed', 'black'),
+                    ('active', 'black')]
+        )
+    else:
+        style.map('Treeview.Heading',
+        background=[('pressed', '#333333'),
+                    ('active', '#333333')],
+        foreground=[('pressed', 'white'),
+                    ('active', 'white')]
+        )
     
+    # update TNotebook style
+    style.configure('TNotebook', background=bgColor)
+    style.configure('TNotebook.Tab', background=bgColor, foreground=textColor)
+    if darkMode == False:
+        style.map('TNotebook.Tab',
+        background=[('pressed', '#e8e8e8'),
+                    ('active', '#e8e8e8')],
+        foreground=[('pressed', 'black'),
+                    ('active', 'black')]
+        )
+    else:
+        style.map('TNotebook.Tab',
+        background=[('pressed', '#333333'),
+                    ('active', '#333333')],
+        foreground=[('pressed', 'white'),
+                    ('active', 'white')]
+        )
+
+    # update ThemeButton style
+    style.configure('ThemeButton.TButton', background=themeButtonBgColor, foreground=themeButtonTextColor)
+    if darkMode == False:
+        style.map('ThemeButton.TButton',
+        background=[('pressed', bgColor),
+                    ('active', '#333333')],
+        foreground=[('pressed', textColor),
+                    ('active', themeButtonTextColor)]
+        )
+    else:
+        style.map('ThemeButton.TButton',
+        background=[('pressed', bgColor),
+                    ('active', '#e8e8e8')],
+        foreground=[('pressed', textColor),
+                    ('active', themeButtonTextColor)]
+        )
+    if themeButtonExists == True: themeButton['text'] = themeButtonText
+
+    # update window style
+    window.configure(bg=bgColor)
+    
+    return
+
 data =[]
 selected_option = 0
 sort_option =0
 api_obj = API()        
 history_obj = History()
 computation_obj = Computation()
+darkMode = True
+bgColor = ''
+textColor = ''
+themeButtonBgColor = ''
+themeButtonTextColor = ''
+themeButtonText = ""
+themeButtonExists = False
+
 window = Tk()
 window.title("CAB APPLICATION")
-window.configure(width=500, height=500)
-window.geometry("500x300")
-window.configure(bg='lightgray')
+window.configure(width=600, height=400)
+window.geometry("600x400")
+window.configure(bg=bgColor)
 
 # move window center
 
 tabControl = ttk.Notebook(window)
+
+style = ttk.Style()
+style.theme_use('default')
+
+# theme button
+themeButton = ttk.Button(window, text = themeButtonText, command = update_theme, style="ThemeButton.TButton")
+themeButton['cursor'] = 'hand2'
+themeButton.pack()
+themeButtonExists = True
+
+update_theme()
 
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
@@ -138,21 +272,26 @@ tabControl.add(tab2, text ='History')
 tabControl.pack(expand = 1, fill ="both")
 
 api_var = IntVar()
-R1 = Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=sel)
+R1 = ttk.Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=sel)
 R1.pack( anchor = W )
-R2 = Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=sel)
+R1['cursor'] = 'hand2'
+R2 = ttk.Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=sel)
 R2.pack( anchor = W )
-R3 = Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=sel)
+R2['cursor'] = 'hand2'
+R3 = ttk.Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=sel)
 R3.pack( anchor = W)
-R4 = Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=sel)
+R3['cursor'] = 'hand2'
+R4 = ttk.Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=sel)
 R4.pack( anchor = W)
+R4['cursor'] = 'hand2'
 game_frame = Frame(tab1)
 
 #scrollbar
-game_scroll = Scrollbar(game_frame)
+game_scroll = ttk.Scrollbar(game_frame)
 game_scroll.pack(side=RIGHT, fill=Y)
 table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=5)
-start_running_button = Button(tab1, text ="Start Running", command = running_click)
+start_running_button = ttk.Button(tab1, text ="Start Running", command = running_click)
+start_running_button['cursor'] = 'hand2'
 start_running_button.pack(anchor = E)
 table1.pack()
 game_frame.pack()
@@ -172,21 +311,25 @@ table1.heading("Exchange",text="Exchange",anchor=CENTER)
 table1.heading("Profit Link",text="Profit Link",anchor=CENTER)
 table1.heading("Profitibility",text="Profitibility",anchor=CENTER)
 table1.pack()
+table1['cursor'] = 'hand2'
 
 #HISTORY TAB STUFF
 #FILTERS
-filters_frame = Frame(tab2)
-sort_frame = Frame(filters_frame)    
+filters_frame = ttk.Frame(tab2)
+sort_frame = ttk.Frame(filters_frame)    
 sort_frame.pack(anchor = W,side='left')
 sort_type = IntVar()
-sort1 = Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=hel)
+sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=hel)
 sort1.pack( anchor = W )
-sort2 = Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=hel)
+sort1['cursor'] = 'hand2'
+sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=hel)
 sort2.pack( anchor = W )
-sort3 = Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=hel)
+sort2['cursor'] = 'hand2'
+sort3 = ttk.Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=hel)
 sort3.pack( anchor = W)
+sort3['cursor'] = 'hand2'
 #Dates Within
-dates_frame = Frame(filters_frame)    
+dates_frame = ttk.Frame(filters_frame)    
 dates_frame.pack(anchor = W,side='left')
 #date_type = IntVar()
 #date1 = Radiobutton(dates_frame, text="None", variable=date_type, value=1,command=hel)
@@ -194,22 +337,25 @@ dates_frame.pack(anchor = W,side='left')
 #date2 = Radiobutton(dates_frame, text="From Date To Date", variable=date_type, value=2,command=hel)
 #date2.pack( anchor = W )
 #ORDER
-order_frame = Frame(filters_frame)    
+order_frame = ttk.Frame(filters_frame)    
 order_frame.pack(anchor = W,side='right')
 order_type = BooleanVar()
-order1 = Radiobutton(order_frame, text="Ascending", variable=order_type, value=True,command=hel)
+order1 = ttk.Radiobutton(order_frame, text="Ascending", variable=order_type, value=True,command=hel)
 order1.pack( anchor = W )
-order2 = Radiobutton(order_frame, text="Descending", variable=order_type, value=False,command=hel)
+order1['cursor'] = 'hand2'
+order2 = ttk.Radiobutton(order_frame, text="Descending", variable=order_type, value=False,command=hel)
 order2.pack( anchor = W )
+order2['cursor'] = 'hand2'
 filters_frame.pack()
 #TABLE FRAME
-table_frame2 = Frame(tab2)        
+table_frame2 = ttk.Frame(tab2)        
 table_frame2.pack()
 #scrollbar
-game_scroll = Scrollbar(table_frame2)
+game_scroll = ttk.Scrollbar(table_frame2)
 game_scroll.pack(side=RIGHT, fill=Y)
 table2 = ttk.Treeview(table_frame2,yscrollcommand=game_scroll.set,height=5)
 table2.pack()
+table2['cursor'] = 'hand2'
 game_scroll.config(command=table2.yview)
 #define our column
 table2['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitibility')
@@ -226,7 +372,8 @@ table2.heading("Exchange",text="Exchange",anchor=CENTER)
 table2.heading("Profit Link",text="Profit Link",anchor=CENTER)
 table2.heading("Profitibility",text="Profitibility",anchor=CENTER)
 table2.pack()
-export_history = Button(tab2, text ="Export History", command = export_history_click)
+export_history = ttk.Button(tab2, text ="Export History", command = export_history_click)
+export_history['cursor'] = 'hand2'
 export_history.pack()
 print("2 Tables created")
 tabControl.bind('<<NotebookTabChanged>>', history_tab_clicked)
