@@ -90,6 +90,32 @@ class API:
 
         return 0
 
+    def ftx(self):
+        results_dict = {"eth":{"bch":99999,"eth":1.0,"btc":99999,"ltc":99999,"usd":99999},"usd":{"bch":99999,"eth":99999,"btc":99999,"ltc":99999,"usd":1.0},"ltc":{"bch":99999,"eth":99999,"btc":99999,"ltc":1.0,"usd":99999},"btc":{"bch":99999,"eth":99999,"btc":1.0,"ltc":99999,"usd":99999},"bch":{"bch":1.0,"eth":99999,"btc":99999,"ltc":99999,"usd":99999}}
+        currencies_list = ['bch','eth','btc','ltc', 'usd']
+        url = 'https://ftx.com/api/markets'
+        markets = requests.get(url)
+        value = markets.headers['Date']
+        result = re.findall("\w\w\:\w\w\:\w\w", value)
+        self.time = result[0]
+        print(value)
+        response = json.loads(markets.text)
+        for i in range(0,len(response['result'])):
+            for x in range(0,len(currencies_list)):
+                curr = currencies_list[x]
+                for y in range(0,len(currencies_list)):
+                    curr_ = curr + '/' + currencies_list[y]
+                    if(response['result'][i]['name'] == (curr_.upper())):
+                        results_dict[currencies_list[x]][currencies_list[y]] = response['result'][i]['price']
+        for j in range(0,len(currencies_list)):
+            for r in range(0,len(currencies_list)):
+                if(results_dict[currencies_list[j]][currencies_list[r]] == 99999):
+                    results_dict[currencies_list[j]][currencies_list[r]] = results_dict[currencies_list[j]]['usd']/results_dict[currencies_list[r]]['usd']
+
+
+            print(results_dict)
+            return results_dict
+
     #def kucoin(self):
             # https://api.kucoin.com/api/v1/market/histories?symbol=ETH-USDT
         #return 0
