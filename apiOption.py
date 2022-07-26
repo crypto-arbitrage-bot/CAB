@@ -60,46 +60,79 @@ class CoinGecko(APIOption):
 
 class Coinbase(APIOption):
   # override abstract method retrieve_data()
-  def retrieve_data(self):
-    # https://api.coinbase.com/v2/prices/BTC-USD/spot
-    # {"data":{"base":"BTC","currency":"USD","amount":"23128.76"}}
+#   def retrieve_data(self):
+#     # https://api.coinbase.com/v2/prices/BTC-USD/spot
+#     # {"data":{"base":"BTC","currency":"USD","amount":"23128.76"}}
     
-    symbol = ['BCH','ETH','BTC','LTC','EOS']
+#     symbol = ['BCH','ETH','BTC','LTC','EOS']
     
-    price = []
-    return_dict = {}
+#     price = []
+#     return_dict = {}
     
-    for coin in symbol:
-        return_dict[coin.lower()] = {}
+#     for coin in symbol:
+#         return_dict[coin.lower()] = {}
         
-    for coin in symbol:
-        base = 'https://api.coinbase.com/v2/prices/'
-        base += coin + '-USD/spot'
-        # print(base)
-        request = requests.get(base) 
-        tmp = json.loads(request.text)
-        price.append(float(tmp['data']['amount']))
+#     for coin in symbol:
+#         base = 'https://api.coinbase.com/v2/prices/'
+#         base += coin + '-USD/spot'
+#         # print(base)
+#         request = requests.get(base) 
+#         tmp = json.loads(request.text)
+#         price.append(float(tmp['data']['amount']))
     
-    for coin in return_dict:
-        for sub_coin in symbol:
-            (return_dict[coin])[sub_coin.lower()] = price[symbol.index(coin.upper())] / price[symbol.index(sub_coin.upper())]
+#     for coin in return_dict:
+#         for sub_coin in symbol:
+#             (return_dict[coin])[sub_coin.lower()] = price[symbol.index(coin.upper())] / price[symbol.index(sub_coin.upper())]
     
-    request = requests.get("https://api.coinbase.com/v2/time")
-    tmp = json.loads(request.text)
-    time = float(tmp['data']['epoch'])
-    time = datetime.utcfromtimestamp(time)
-    timeString = ""
-    if time.hour < 10: timeString += "0"
-    timeString += str(time.hour)
-    timeString += ":"
-    if time.minute < 10: timeString += "0"
-    timeString += str(time.minute)
-    timeString += ":"
-    if time.second < 10: timeString += "0"
-    timeString += str(time.second)
+#     request = requests.get("https://api.coinbase.com/v2/time")
+#     tmp = json.loads(request.text)
+#     time = float(tmp['data']['epoch'])
+#     time = datetime.utcfromtimestamp(time)
+#     timeString = ""
+#     if time.hour < 10: timeString += "0"
+#     timeString += str(time.hour)
+#     timeString += ":"
+#     if time.minute < 10: timeString += "0"
+#     timeString += str(time.minute)
+#     timeString += ":"
+#     if time.second < 10: timeString += "0"
+#     timeString += str(time.second)
 
-    #print(return_dict)
-    return ((timeString, return_dict))
+#     #print(return_dict)
+#     return ((timeString, return_dict))
+    def retrieve_data(self):
+        currencies_list = ['bch','eth','btc','ltc','eos','xrp','dot']
+
+        results_dict = {}
+
+        for currency in currencies_list:
+            base = 'https://api.coinbase.com/v2/exchange-rates?currency='
+            base += currency
+            request = requests.get(base)
+            request_data = json.loads(request.text)
+            exchange_rates = {}
+            for currency2 in currencies_list:
+                currency2 = currency2.upper()
+                exchange_rates[currency2.lower()] = float(request_data['data']['rates'][currency2])
+
+            results_dict[currency] = exchange_rates
+
+        request = requests.get("https://api.coinbase.com/v2/time")
+        tmp = json.loads(request.text)
+        time = float(tmp['data']['epoch'])
+        time = datetime.utcfromtimestamp(time)
+        timeString = ""
+        if time.hour < 10: timeString += "0"
+        timeString += str(time.hour)
+        timeString += ":"
+        if time.minute < 10: timeString += "0"
+        timeString += str(time.minute)
+        timeString += ":"
+        if time.second < 10: timeString += "0"
+        timeString += str(time.second)
+
+        #print(results_dict)
+        return ((timeString, results_dict))
 
 class FTX(APIOption):
   # override abstract method retrieve_data()
@@ -110,16 +143,29 @@ class Binance(APIOption):
   # override abstract method retrieve_data()
   def retrieve_data(self):
     # https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT
-    list1 = ['BCH','ETH','BTC','LTC', 'EOS']
-    for coin in list1:
-        base = 'https://api.binance.com/api/v3/avgPrice?symbol='
-        for coin1 in list1:
-            if coin != coin1:
-                base = base + coin + coin1
-                request = requests.get(base) 
-                results_dict = json.loads(request.text)
-                print(results_dict)
-    return 0
+
+    # BUSD: { BUSDUSDT }
+    # BTC: { BTCBUSD,	BTCUSDT}
+    return_dict = {}
+    return_dict["busd"] = {}
+    (return_dict['busd'])['busd'] = '1.0'
+    return_dict["btc"] = {}
+    (return_dict['btc'])['btc'] = '1.0'
+
+    request = requests.get('https://api.binance.com/api/v3/avgPrice?symbol=BUSDUSDT')
+    tmp = json.loads(request.text)
+    (return_dict['busd'])['usdt'] = tmp['price']
+
+    request = requests.get('https://api.binance.com/api/v3/avgPrice?symbol=BTCBUSD')
+    tmp = json.loads(request.text)
+    (return_dict['btc'])['busd'] = tmp['price']
+
+    request = requests.get('https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT')
+    tmp = json.loads(request.text)
+    (return_dict['btc'])['usdt'] = tmp['price']
+
+    print(return_dict)
+    return ((0,return_dict))
 
 class KuCoin(APIOption):
   # https://api.kucoin.com/api/v1/market/histories?symbol=ETH-USDT
@@ -134,7 +180,8 @@ class Kraken(APIOption):
     print("Kraken retrieve_data()")
 
 # driver code
-apiOption = CoinGecko()
-apiOption.retrieve_data()
-apiOption = Coinbase()
-apiOption.retrieve_data()
+# apiOption = CoinGecko()
+# apiOption.retrieve_data()
+# print()
+# apiOption = Coinbase()
+# apiOption.retrieve_data()
