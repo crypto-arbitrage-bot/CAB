@@ -8,14 +8,19 @@ from computation import Computation
 from tkinter import *
 from tkinter import ttk
 import pandas as pd
-
+import requests
 #handles API selection clicks        
 def sel():
     selection = "You selected the option " + str(api_var.get())
     global selected_option 
     selected_option= int(api_var.get())
     print(selection)
-    
+
+def check_version():
+    #PLACE HOLDER FOR VERSION CHECK
+    #request = requests.get("")
+   # version = request.text
+    return 0
 #Handles export history clicks
 def export_history_click():
     history_obj.export_history()
@@ -260,7 +265,8 @@ themeButton['cursor'] = 'hand2'
 themeButton.pack()
 
 update_theme()
-
+versionButton = ttk.Button(window, command = check_version,text="Check Version")
+versionButton.pack(side=TOP,anchor=E)
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 
