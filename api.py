@@ -113,8 +113,8 @@ class API:
                     results_dict[currencies_list[j]][currencies_list[r]] = results_dict[currencies_list[j]]['usd']/results_dict[currencies_list[r]]['usd']
 
 
-            print(results_dict)
-            return results_dict
+        print(results_dict)
+        return results_dict
 
     #def kucoin(self):
             # https://api.kucoin.com/api/v1/market/histories?symbol=ETH-USDT
@@ -138,5 +138,6 @@ class API:
         return apiOption
 
 # driver code
-# obj = API(3)
+obj = API(3)
 # obj.get_data()
+obj.ftx()
