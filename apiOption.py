@@ -31,7 +31,6 @@ class CoinGecko(APIOption):
             base += ','
     request = requests.get(base)  
     value = request.headers['Date']
-    print(value)
     result = re.findall("\w\w\:\w\w\:\w\w", value)
     time = result[0]
     results_dict = json.loads(request.text)
@@ -54,52 +53,11 @@ class CoinGecko(APIOption):
         if(coin == 'polkadot'):
             results_dict['dot'] = results_dict['polkadot']
             del results_dict[coin]
-    #print(results_dict)
     
     return((time,results_dict))
 
 class Coinbase(APIOption):
   # override abstract method retrieve_data()
-#   def retrieve_data(self):
-#     # https://api.coinbase.com/v2/prices/BTC-USD/spot
-#     # {"data":{"base":"BTC","currency":"USD","amount":"23128.76"}}
-    
-#     symbol = ['BCH','ETH','BTC','LTC','EOS']
-    
-#     price = []
-#     return_dict = {}
-    
-#     for coin in symbol:
-#         return_dict[coin.lower()] = {}
-        
-#     for coin in symbol:
-#         base = 'https://api.coinbase.com/v2/prices/'
-#         base += coin + '-USD/spot'
-#         # print(base)
-#         request = requests.get(base) 
-#         tmp = json.loads(request.text)
-#         price.append(float(tmp['data']['amount']))
-    
-#     for coin in return_dict:
-#         for sub_coin in symbol:
-#             (return_dict[coin])[sub_coin.lower()] = price[symbol.index(coin.upper())] / price[symbol.index(sub_coin.upper())]
-    
-#     request = requests.get("https://api.coinbase.com/v2/time")
-#     tmp = json.loads(request.text)
-#     time = float(tmp['data']['epoch'])
-#     time = datetime.utcfromtimestamp(time)
-#     timeString = ""
-#     if time.hour < 10: timeString += "0"
-#     timeString += str(time.hour)
-#     timeString += ":"
-#     if time.minute < 10: timeString += "0"
-#     timeString += str(time.minute)
-#     timeString += ":"
-#     if time.second < 10: timeString += "0"
-#     timeString += str(time.second)
-
-#     #print(return_dict)
-#     return ((timeString, return_dict))
     def retrieve_data(self):
         currencies_list = ['bch','eth','btc','ltc','eos','xrp','dot']
 
@@ -131,7 +89,6 @@ class Coinbase(APIOption):
         if time.second < 10: timeString += "0"
         timeString += str(time.second)
 
-        #print(results_dict)
         return ((timeString, results_dict))
 
 class FTX(APIOption):
@@ -163,56 +120,10 @@ class FTX(APIOption):
 
 class Binance(APIOption):
   # override abstract method retrieve_data()
-#   def retrieve_data(self):
-#     # https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT
-
-#     # BUSD: { BUSDUSDT }
-#     # BTC: { BTCBUSD,	BTCUSDT}
-#     return_dict = {}
-#     return_dict["busd"] = {}
-#     (return_dict['busd'])['busd'] = '1.0'
-#     return_dict["btc"] = {}
-#     (return_dict['btc'])['btc'] = '1.0'
-
-#     request = requests.get('https://api.binance.com/api/v3/avgPrice?symbol=BUSDUSDT')
-#     tmp = json.loads(request.text)
-#     (return_dict['busd'])['usdt'] = tmp['price']
-
-#     request = requests.get('https://api.binance.com/api/v3/avgPrice?symbol=BTCBUSD')
-#     tmp = json.loads(request.text)
-#     (return_dict['btc'])['busd'] = tmp['price']
-
-#     request = requests.get('https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT')
-#     tmp = json.loads(request.text)
-#     (return_dict['btc'])['usdt'] = tmp['price']
-
-#     print(return_dict)
-#     return ((0,return_dict))
     def retrieve_data(self):
         currencies_list = ['bch','eth','ltc','eos','xrp','dot']
-
         results_dict = {}
-        # bitcoin_prices = {}
-
-        # # get bitcoin price of each currency
-        # for currency in currencies_list:
-        #     base = "https://api.binance.com/api/v3/avgPrice?symbol=" + currency.upper() + "BTC"
-        #     request = requests.get(base)
-        #     request_data = json.loads(request.text)
-
-        #     bitcoin_prices[currency] = float(request_data['price'])
-        
-        # # convert currency bitcoin price into other currencies
-        # for currency in currencies_list:
-        #     exchange_data = {}
-        #     exchange_data[currency] = 1.0
-        #     for currency2 in currencies_list:
-        #         exchange_data[currency2] = (1.0 / bitcoin_prices[currency2]) * bitcoin_prices[currency]
-            
-        #     results_dict[currency] = exchange_data
-
         usdt_prices = {}
-        
         for currency in currencies_list:
             exchange_rates = {}
             exchange_rates[currency] = 1.0
