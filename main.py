@@ -1,87 +1,102 @@
-from os import stat
-from select import select
-import sys
-import tkinter
+# pylint: disable=invalid-name
+# pylint: disable=global-statement
+"""
+Handles the GUI part of the application and transfers data between the APIs, Computation, and
+History parts of the application.
+"""
+
+from tkinter import * # pylint: disable=wildcard-import, unused-wildcard-import
+from tkinter import ttk
+import pandas as pd
 from api import API
 from history import History
 from computation import Computation
-from tkinter import *
-from tkinter import ttk
-import pandas as pd
 
-#handles API selection clicks        
 def sel():
+    """
+    Handles API selection clicks.
+    """
     selection = "You selected the option " + str(api_var.get())
-    global selected_option 
-    selected_option= int(api_var.get())
+    global selected_option
+    selected_option = int(api_var.get())
     print(selection)
-    
-#Handles export history clicks
+
 def export_history_click():
+    """
+    Handles export history clicks.
+    """
     history_obj.export_history()
 
-#Handles History Filter clicks
 def hel():
-    if(sort_type.get() == 1):
+    """
+    Handles history filter clicks.
+    """
+    global data
+    if sort_type.get() == 1:
         print("Sort by time")
         data = history_obj.get_history().sort_values(by='Time', ascending=order_type.get())
-    if(sort_type.get() == 2):
+    if sort_type.get() == 2:
         print("Sort by Exchange")
         data = history_obj.get_history().sort_values(by='Exchange',ascending=order_type.get())
-    if(sort_type.get() == 3):
+    if sort_type.get() == 3:
         print("Sort by Profitability")
         data = history_obj.get_history().sort_values(by='Profitability', ascending=order_type.get())
     history_update_table(data)
 
-#handles history tab clicks
 def history_tab_clicked(event):
+    """
+    Handles history tab clicks.
+    """
+    global data
     tab = event.widget.tab('current')['text']
     if tab =='History':
         print("History clicked")
         data = history_obj.get_history()
         history_update_table(data)
-    return
 
-#updates history table
-def history_update_table(data):
-    # code for updating table
-    #delete old data
-    
+def history_update_table(data_obj):
+    """
+    Updates the history table.
+    """
     for i in table2.get_children():
         table2.delete(i)
-    count_row = data.shape[0]
+    count_row = data_obj.shape[0]
     for i in range(count_row):
-        first_v =data['Time'].values[i]
-        second_v = data['Exchange'].values[i]
-        third_v = data['Path'].values[i]
-        fourth_v = data['Profitability'].values[i]
-        table2.insert(parent='',index='end',iid=i,text='',values=(first_v,second_v,third_v,fourth_v))
-        
+        first_v = data_obj['Time'].values[i]
+        second_v = data_obj['Exchange'].values[i]
+        third_v = data_obj['Path'].values[i]
+        fourth_v = data_obj['Profitability'].values[i]
+        table2.insert(parent='', index='end', iid=i, text='',
+        values=(first_v,second_v,third_v,fourth_v))
+
     table2.pack()
     table2.update()
 
-#updates table on HOME tab
-def running_update_table(data):
-    # code for updating table
-    #delete old data
-    
+def running_update_table(data_obj):
+    """
+    Updates the table on the Home tab.
+    """
+
     for i in table1.get_children():
         table1.delete(i)
-    count_row = data.shape[0]
+    count_row = data_obj.shape[0]
     for i in range(count_row):
-        first_v =data['Time'].values[i]
-        second_v = data['Exchange'].values[i]
-        third_v = data['Path'].values[i]
-        fourth_v = data['Profitability'].values[i]
-        table1.insert(parent='',index='end',iid=i,text='',values=(first_v,second_v,third_v,fourth_v))
-        
+        first_v = data_obj['Time'].values[i]
+        second_v = data_obj['Exchange'].values[i]
+        third_v = data_obj['Path'].values[i]
+        fourth_v = data_obj['Profitability'].values[i]
+        table1.insert(parent='', index='end', iid=i, text='',
+        values=(first_v,second_v,third_v,fourth_v))
+
     table1.pack()
     table1.update()
-    
-#Handles start running clicks    
+
 def running_click():
-    print("Running clicked")   
-    global data
+    """
+    Handles start running clicks.
+    """
+    print("Running clicked")
+    global data, api_obj, computation_obj
     api_obj = API(selected_option)
     full_data = api_obj.get_data()
     time = full_data[0]
@@ -90,15 +105,15 @@ def running_click():
     computation_obj = Computation(crypto_data=data)
     computation_obj.generate_graph()
     exchange = "TEST"
-    if(selected_option == 1):
+    if selected_option == 1:
         exchange = "CoinGecko"
-    if(selected_option == 2):
+    if selected_option == 2:
         exchange = "Coinbase"
-    if(selected_option == 3):
+    if selected_option == 3:
         exchange = "FTX"
-    if(selected_option == 4):
+    if selected_option == 4:
         exchange = "Binance"
-    data = computation_obj.scan_graph() #data hold link with profitibility        
+    data = computation_obj.scan_graph() #data hold link with profitibility
     complete_data = pd.DataFrame()
    # if(len(data)==0):
    #     empty_data = {
@@ -118,16 +133,20 @@ def running_click():
             "Profitability": data['Result'].values[row]
         }
         full_data_df = pd.DataFrame(full_data)
-        complete_data =pd.concat([complete_data, full_data_df])        
+        complete_data =pd.concat([complete_data, full_data_df])
     history_obj.append_history(complete_data)
     running_update_table(complete_data)
-    return
-    
+
 def update_theme():
-    global bgColor, textColor, themeButtonImage, darkMode, themeButton
+    """
+    Updates the GUI's current theme.
+    - Switches to Dark Mode when current theme is Light Mode
+    - Switches to Light Mode when current theme is Dark Mode
+    """
+    global bgColor, textColor, themeButtonImage, darkMode, themeButton # pylint: disable=global-variable-not-assigned
 
     # update global variables
-    if darkMode == False:
+    if darkMode is False:
         bgColor = '#292929'
         textColor = 'white'
         darkMode = True
@@ -141,7 +160,7 @@ def update_theme():
 
     # update TButton style
     style.configure('TButton', background=bgColor, foreground=textColor)
-    if darkMode == False:
+    if darkMode is False:
         style.map('TButton',
         background=[('pressed', '#e8e8e8'),
                     ('active', '#e8e8e8')],
@@ -158,7 +177,7 @@ def update_theme():
 
     # update TRadiobutton style
     style.configure('TRadiobutton', background=bgColor, foreground=textColor)
-    if darkMode == False:
+    if darkMode is False:
         style.map('TRadiobutton',
         background=[('pressed', '#e8e8e8'),
                     ('active', '#e8e8e8')],
@@ -172,11 +191,15 @@ def update_theme():
         foreground=[('pressed', 'white'),
                     ('active', 'white')]
         )
-    
+
     # Update Treeview style
-    style.configure('Treeview', background=bgColor, foreground=textColor, fieldbackground=bgColor)
-    style.configure('Treeview.Heading', background=bgColor, foreground=textColor, fieldbackground=bgColor)
-    if darkMode == False:
+    style.configure('Treeview', background=bgColor,
+    foreground=textColor, fieldbackground=bgColor)
+
+    style.configure('Treeview.Heading', background=bgColor,
+    foreground=textColor, fieldbackground=bgColor)
+
+    if darkMode is False:
         style.map('Treeview.Heading',
         background=[('pressed', '#e8e8e8'),
                     ('active', '#e8e8e8')],
@@ -190,11 +213,11 @@ def update_theme():
         foreground=[('pressed', 'white'),
                     ('active', 'white')]
         )
-    
+
     # update TNotebook style
     style.configure('TNotebook', background=bgColor)
     style.configure('TNotebook.Tab', background=bgColor, foreground=textColor)
-    if darkMode == False:
+    if darkMode is False:
         style.map('TNotebook.Tab',
         background=[('pressed', '#e8e8e8'),
                     ('active', '#e8e8e8')],
@@ -210,7 +233,7 @@ def update_theme():
         )
 
     # update ThemeButton style
-    if darkMode == False:
+    if darkMode is False:
         style.configure("ThemeButton.TButton", background="white")
         style.map('ThemeButton.TButton',
             background=[('pressed', 'white'),
@@ -225,16 +248,13 @@ def update_theme():
         themeButtonImage = PhotoImage(file = "light_mode.png")
         themeButton['image'] = themeButtonImage
 
-
     # update window style
     window.configure(bg=bgColor)
-    
-    return
 
 data =[]
 selected_option = 0
-sort_option =0
-api_obj = API(selected_option)        
+sort_option = 0
+api_obj = API(selected_option)
 history_obj = History()
 computation_obj = Computation()
 darkMode = True
@@ -258,7 +278,9 @@ style.theme_use('default')
 windowExists = True
 
 # theme button
-themeButton = ttk.Button(window, command = update_theme, style="ThemeButton.TButton", image=themeButtonImage)
+themeButton = ttk.Button(window, command = update_theme,
+style="ThemeButton.TButton", image=themeButtonImage)
+
 themeButton['cursor'] = 'hand2'
 themeButton.pack()
 
@@ -304,7 +326,7 @@ table1.column("Time",anchor=CENTER, width=80)
 table1.column("Exchange",anchor=CENTER,width=80)
 table1.column("Profit Link",anchor=CENTER,width=160)
 table1.column("Profitibility",anchor=CENTER,width=100)
-#Create Headings 
+#Create Headings
 table1.heading("#0",text="",anchor=CENTER)
 table1.heading("Time",text="Time",anchor=CENTER)
 table1.heading("Exchange",text="Exchange",anchor=CENTER)
@@ -316,7 +338,7 @@ table1['cursor'] = 'hand2'
 #HISTORY TAB STUFF
 #FILTERS
 filters_frame = ttk.Frame(tab2)
-sort_frame = ttk.Frame(filters_frame)    
+sort_frame = ttk.Frame(filters_frame)
 sort_frame.pack(anchor = W,side='left')
 sort_type = IntVar()
 sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=hel)
@@ -329,7 +351,7 @@ sort3 = ttk.Radiobutton(sort_frame, text="Profitibility", variable=sort_type, va
 sort3.pack( anchor = W)
 sort3['cursor'] = 'hand2'
 #Dates Within
-dates_frame = ttk.Frame(filters_frame)    
+dates_frame = ttk.Frame(filters_frame)
 dates_frame.pack(anchor = W,side='left')
 #date_type = IntVar()
 #date1 = Radiobutton(dates_frame, text="None", variable=date_type, value=1,command=hel)
@@ -337,18 +359,22 @@ dates_frame.pack(anchor = W,side='left')
 #date2 = Radiobutton(dates_frame, text="From Date To Date", variable=date_type, value=2,command=hel)
 #date2.pack( anchor = W )
 #ORDER
-order_frame = ttk.Frame(filters_frame)    
+order_frame = ttk.Frame(filters_frame)
 order_frame.pack(anchor = W,side='right')
 order_type = BooleanVar()
-order1 = ttk.Radiobutton(order_frame, text="Ascending", variable=order_type, value=True,command=hel)
+order1 = ttk.Radiobutton(order_frame, text="Ascending",
+variable=order_type, value=True,command=hel)
+
 order1.pack( anchor = W )
 order1['cursor'] = 'hand2'
-order2 = ttk.Radiobutton(order_frame, text="Descending", variable=order_type, value=False,command=hel)
+order2 = ttk.Radiobutton(order_frame, text="Descending",
+variable=order_type, value=False,command=hel)
+
 order2.pack( anchor = W )
 order2['cursor'] = 'hand2'
 filters_frame.pack()
 #TABLE FRAME
-table_frame2 = ttk.Frame(tab2)        
+table_frame2 = ttk.Frame(tab2)
 table_frame2.pack()
 #scrollbar
 game_scroll = ttk.Scrollbar(table_frame2)
@@ -365,7 +391,7 @@ table2.column("Time",anchor=CENTER, width=80)
 table2.column("Exchange",anchor=CENTER,width=80)
 table2.column("Profit Link",anchor=CENTER,width=160)
 table2.column("Profitibility",anchor=CENTER,width=120)
-#Create Headings 
+#Create Headings
 table2.heading("#0",text="",anchor=CENTER)
 table2.heading("Time",text="Time",anchor=CENTER)
 table2.heading("Exchange",text="Exchange",anchor=CENTER)
