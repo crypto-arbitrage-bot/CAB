@@ -1,30 +1,43 @@
-import pandas as pd
-import os
+"""
+Holds the History class.
+"""
 from os.path import exists
+import pandas as pd
 
 class History:
-    def __init__(self, filename="history"):
+    """
+    Manages the computation history of the application. Keeps a running track of all profitable
+    links.
+    """
+    def __init__(self, filename = "history"):
+        """
+        Initializes the History class with a filename (that the history will export to).
+        """
         self.history = pd.DataFrame(columns=["Time", "Exchange", "Path", "Profitability"])
         self.filename = filename
-    
-    #get history from file along with the current data  
+
     def get_history(self):
-        
+        """
+        Gets the history from the history file, along with the current data.
+        """
         file_exists = exists(self.filename + ".xlsx")
         print("Get history")
-        if(file_exists):
+        if file_exists:
             data= pd.read_excel(self.filename + ".xlsx", sheet_name='a')
             self.history = pd.concat([self.history, data])
         return self.history
-    
-    #add new data to the history
+
     def append_history(self, data):
+        """
+        Adds new data to the history.
+        """
         self.history = pd.concat([self.history, data])
         print("Append history")
-    
-    #save the history to file    
+
     def export_history(self):
-        file_exists = exists(self.filename + ".xlsx")
+        """
+        Saves the current history to a file.
+        """
         print("Export history")
         print(self.history)
         self.history.to_excel(self.filename + ".xlsx", sheet_name='a', index = False)
