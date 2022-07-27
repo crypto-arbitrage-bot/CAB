@@ -11,7 +11,8 @@ class Computation:
         else:
             self.test = crypto_data
         #self.age = age Sets to global variable
-      
+    
+    #generates a graph from the data with the weights being conversion rates  
     def generate_graph(self):
         print("Hello this is a function in Computation")
         self.graph = nx.DiGraph()
@@ -20,7 +21,8 @@ class Computation:
             for node2 in  self.test.keys():
                 if self.test[node1]!= self.test[node2][node1]:
                     self.graph.add_edge(node1,node2,weight = self.test[node1][node2])
-        
+    
+    #finds a path that generates the most profit    
     def scan_graph(self):
         arb_checks = []
         for c1, c2 in combinations(self.graph.nodes, 2):
@@ -30,7 +32,7 @@ class Computation:
                     path_weight1 *= self.graph[path[i]][path[i+1]]['weight'] #find profibility
                 path.reverse()
                 path_weight2 = 1
-                #Do I need to do it both ways to find profitibility of Link?
+                
                 for i in range(len(path) - 1):
                     path_weight2 *= self.graph[path[i]][path[i+1]]['weight']  
                 factor = path_weight1 * path_weight2 #checks profitability

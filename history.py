@@ -6,7 +6,8 @@ class History:
     def __init__(self, filename="history"):
         self.history = pd.DataFrame(columns=["Time", "Exchange", "Path", "Profitability"])
         self.filename = filename
-      
+    
+    #get history from file along with the current data  
     def get_history(self):
         
         file_exists = exists(self.filename + ".xlsx")
@@ -16,10 +17,12 @@ class History:
             self.history = pd.concat([self.history, data])
         return self.history
     
+    #add new data to the history
     def append_history(self, data):
         self.history = pd.concat([self.history, data])
         print("Append history")
-        
+    
+    #save the history to file    
     def export_history(self):
         file_exists = exists(self.filename + ".xlsx")
         print("Export history")
