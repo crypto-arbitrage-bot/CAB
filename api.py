@@ -2,7 +2,7 @@
 Holds the API class.
 """
 
-from apiOption import CoinGecko, Coinbase, FTX, Binance, KuCoin, Kraken
+from api_option import CoinGecko, Coinbase, FTX, Binance, KuCoin, Kraken
 
 class API:
     """
