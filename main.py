@@ -312,7 +312,7 @@ game_frame = Frame(tab1)
 game_scroll = ttk.Scrollbar(game_frame)
 game_scroll.pack(side=RIGHT, fill=Y)
 table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=5)
-start_running_button = ttk.Button(tab1, text ="Start Running", command = running_click)
+start_running_button = ttk.Button(tab1, text ="Retrieve Data", command = running_click)
 start_running_button['cursor'] = 'hand2'
 start_running_button.pack(anchor = E)
 table1.pack()
