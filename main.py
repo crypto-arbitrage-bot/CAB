@@ -261,7 +261,7 @@ darkMode = True
 bgColor = ''
 textColor = ''
 themeButtonImage = ''
-
+version = .5
 window = Tk()
 window.title("CAB APPLICATION")
 window.configure(width=600, height=400)

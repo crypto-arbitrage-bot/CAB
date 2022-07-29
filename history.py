@@ -3,6 +3,9 @@ Holds the History class.
 """
 from os.path import exists
 import pandas as pd
+from pathlib import Path
+import os
+
 
 class History:
     """
@@ -32,6 +35,7 @@ class History:
         Adds new data to the history.
         """
         self.history = pd.concat([self.history, data])
+        self.history.to_excel(+self.filename + ".xlsx", sheet_name='a', index = False)
         print("Append history")
 
     def export_history(self):
@@ -40,7 +44,10 @@ class History:
         """
         print("Export history")
         print(self.history)
-        self.history.to_excel(self.filename + ".xlsx", sheet_name='a', index = False)
+        path_to_download_folder = str(os.path.join(Path.home(), "Downloads"))
+        writer = pd.ExcelWriter(path_to_download_folder , engine='xlsxwriter')
+        print(path_to_download_folder)
+        self.history.to_excel(writer +"/"+self.filename + ".xlsx", sheet_name='a', index = False)
 
 # for testing
 
