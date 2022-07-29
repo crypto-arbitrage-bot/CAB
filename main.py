@@ -5,14 +5,18 @@ Handles the GUI part of the application and transfers data between the APIs, Com
 History parts of the application.
 """
 
+from http import server
+import json
+from pyexpat import version_info
 from tkinter import * # pylint: disable=wildcard-import, unused-wildcard-import
 from tkinter import ttk
 import pandas as pd
 from api import API
 from history import History
 from computation import Computation
+import requests
 
-def sel():
+def api_click():
     """
     Handles API selection clicks.
     """
@@ -27,7 +31,29 @@ def export_history_click():
     """
     history_obj.export_history()
 
-def hel():
+def print_msg(msg):
+    """
+    Prints a message to the user.
+    """
+    win = Toplevel(window)
+    label = Label(win, text = msg)
+    label.pack(anchor=CENTER)
+    win.mainloop()
+    
+def check_version():
+    """
+    Handles check version clicks.
+    """
+    request = requests.get("https://cab-version.herokuapp.com/version")
+    
+    server_version = json.loads(request.text)
+    print(server_version)
+    if(server_version['version'] == version):
+        print_msg("Version is up to date")
+    else:
+        print_msg("Version is outdated.Please update through our website")
+        
+def history_filter_click():
     """
     Handles history filter clicks.
     """
@@ -61,6 +87,8 @@ def history_update_table(data_obj):
     for i in table2.get_children():
         table2.delete(i)
     count_row = data_obj.shape[0]
+    if(count_row >1000):
+        count_row = 1000
     for i in range(count_row):
         first_v = data_obj['Time'].values[i]
         second_v = data_obj['Exchange'].values[i]
@@ -104,7 +132,7 @@ def running_click():
     print(data)
     computation_obj = Computation(crypto_data=data)
     computation_obj.generate_graph()
-    exchange = "TEST"
+    exchange = "None"
     if selected_option == 1:
         exchange = "CoinGecko"
     if selected_option == 2:
@@ -115,26 +143,19 @@ def running_click():
         exchange = "Binance"
     data = computation_obj.scan_graph() #data hold link with profitibility
     complete_data = pd.DataFrame()
-   # if(len(data)==0):
-   #     empty_data = {
-   #         "Time": "No data",
-   #         "Exchange": exchange,
-   #         "Path": "No data",
-   #         "Profitability": "No data"
-   #     }
-   #     empty_data_df = pd.DataFrame(empty_data)
-    #    complete_data =pd.concat([complete_data, empty_data_df])
-    #else:
-    for row in range(len(data)):
-        full_data = {
-            "Time": time,
-            "Exchange": exchange,
-            "Path": [data['Path'].values[row]],
-            "Profitability": data['Result'].values[row]
-        }
-        full_data_df = pd.DataFrame(full_data)
-        complete_data =pd.concat([complete_data, full_data_df])
-    history_obj.append_history(complete_data)
+    if(len(data)==0):
+       print_msg("No profitable trades found")
+    else:
+        for row in range(len(data)):
+            full_data = {
+                "Time": time,
+                "Exchange": exchange,
+                "Path": [data['Path'].values[row]],
+                "Profitability": data['Result'].values[row]
+            }
+            full_data_df = pd.DataFrame(full_data)
+            complete_data =pd.concat([complete_data, full_data_df])
+        history_obj.append_history(complete_data)
     running_update_table(complete_data)
 
 def update_theme():
@@ -261,7 +282,7 @@ darkMode = True
 bgColor = ''
 textColor = ''
 themeButtonImage = ''
-
+version = 0.5
 window = Tk()
 window.title("CAB APPLICATION")
 window.configure(width=600, height=400)
@@ -285,7 +306,8 @@ themeButton['cursor'] = 'hand2'
 themeButton.pack()
 
 update_theme()
-
+versionButton = ttk.Button(window, command = check_version,text="Check Version")
+versionButton.pack(side=TOP,anchor=E)
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 
@@ -294,16 +316,16 @@ tabControl.add(tab2, text ='History')
 tabControl.pack(expand = 1, fill ="both")
 
 api_var = IntVar()
-R1 = ttk.Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=sel)
+R1 = ttk.Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=api_click)
 R1.pack( anchor = W )
 R1['cursor'] = 'hand2'
-R2 = ttk.Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=sel)
+R2 = ttk.Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=api_click)
 R2.pack( anchor = W )
 R2['cursor'] = 'hand2'
-R3 = ttk.Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=sel)
+R3 = ttk.Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=api_click)
 R3.pack( anchor = W)
 R3['cursor'] = 'hand2'
-R4 = ttk.Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=sel)
+R4 = ttk.Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=api_click)
 R4.pack( anchor = W)
 R4['cursor'] = 'hand2'
 game_frame = Frame(tab1)
@@ -341,34 +363,29 @@ filters_frame = ttk.Frame(tab2)
 sort_frame = ttk.Frame(filters_frame)
 sort_frame.pack(anchor = W,side='left')
 sort_type = IntVar()
-sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=hel)
+sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=history_filter_click)
 sort1.pack( anchor = W )
 sort1['cursor'] = 'hand2'
-sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=hel)
+sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=history_filter_click)
 sort2.pack( anchor = W )
 sort2['cursor'] = 'hand2'
-sort3 = ttk.Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=hel)
+sort3 = ttk.Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=history_filter_click)
 sort3.pack( anchor = W)
 sort3['cursor'] = 'hand2'
 #Dates Within
 dates_frame = ttk.Frame(filters_frame)
 dates_frame.pack(anchor = W,side='left')
-#date_type = IntVar()
-#date1 = Radiobutton(dates_frame, text="None", variable=date_type, value=1,command=hel)
-#date1.pack( anchor = W )
-#date2 = Radiobutton(dates_frame, text="From Date To Date", variable=date_type, value=2,command=hel)
-#date2.pack( anchor = W )
 #ORDER
 order_frame = ttk.Frame(filters_frame)
 order_frame.pack(anchor = W,side='right')
 order_type = BooleanVar()
 order1 = ttk.Radiobutton(order_frame, text="Ascending",
-variable=order_type, value=True,command=hel)
+variable=order_type, value=True,command=history_filter_click)
 
 order1.pack( anchor = W )
 order1['cursor'] = 'hand2'
 order2 = ttk.Radiobutton(order_frame, text="Descending",
-variable=order_type, value=False,command=hel)
+variable=order_type, value=False,command=history_filter_click)
 
 order2.pack( anchor = W )
 order2['cursor'] = 'hand2'
