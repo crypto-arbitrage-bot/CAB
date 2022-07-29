@@ -139,7 +139,7 @@ class FTX(APIOption): # pylint: disable=too-few-public-methods
         for i in range(0,len(response['result'])):
             for curr_index1, currency1 in enumerate(currencies_list):
                 curr = currency1
-                for curr_index2, currency2 in range(0,len(currencies_list)):
+                for curr_index2, currency2 in enumerate(currencies_list):
                     curr_ = curr + '/' + currency2
                     if response['result'][i]['name'] == (curr_.upper()):
                         result = response['result'][i]['price']
