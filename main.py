@@ -87,8 +87,8 @@ def history_update_table(data_obj):
     for i in table2.get_children():
         table2.delete(i)
     count_row = data_obj.shape[0]
-    if(count_row >1000):
-        count_row = 1000
+    if(count_row > 500):
+        count_row = 500
     for i in range(count_row):
         first_v = data_obj['Time'].values[i]
         second_v = data_obj['Exchange'].values[i]
