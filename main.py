@@ -284,7 +284,7 @@ textColor = ''
 themeButtonImage = ''
 version = 0.5
 window = Tk()
-window.title("CAB APPLICATION")
+window.title("The Crypto Arbitrage Bot")
 window.configure(width=600, height=400)
 window.geometry("600x400")
 window.configure(bg=bgColor)
@@ -298,16 +298,23 @@ style.theme_use('default')
 
 windowExists = True
 
+topWindowFrame = ttk.Frame(window)
+topWindowFrame.pack(side=TOP, anchor=W)
+
 # theme button
-themeButton = ttk.Button(window, command = update_theme,
+themeButton = ttk.Button(topWindowFrame, command = update_theme,
 style="ThemeButton.TButton", image=themeButtonImage)
 
 themeButton['cursor'] = 'hand2'
-themeButton.pack()
+themeButton.pack(side=LEFT, padx=10, pady=10)
 
 update_theme()
-versionButton = ttk.Button(window, command = check_version,text="Check Version")
-versionButton.pack(side=TOP,anchor=E)
+
+# check version button
+versionButton = ttk.Button(topWindowFrame, command = check_version,text="Check Version")
+versionButton['cursor'] = 'hand2'
+versionButton.pack(side=LEFT, pady=10)
+
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 
@@ -317,16 +324,16 @@ tabControl.pack(expand = 1, fill ="both")
 
 api_var = IntVar()
 R1 = ttk.Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=api_click)
-R1.pack( anchor = W )
+R1.pack( anchor = W, padx=10, pady=(10,0) )
 R1['cursor'] = 'hand2'
 R2 = ttk.Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=api_click)
-R2.pack( anchor = W )
+R2.pack( anchor = W, padx=10)
 R2['cursor'] = 'hand2'
 R3 = ttk.Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=api_click)
-R3.pack( anchor = W)
+R3.pack( anchor = W, padx=10)
 R3['cursor'] = 'hand2'
 R4 = ttk.Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=api_click)
-R4.pack( anchor = W)
+R4.pack( anchor = W, padx=10)
 R4['cursor'] = 'hand2'
 game_frame = Frame(tab1)
 
@@ -336,7 +343,7 @@ game_scroll.pack(side=RIGHT, fill=Y)
 table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=5)
 start_running_button = ttk.Button(tab1, text ="Retrieve Data", command = running_click)
 start_running_button['cursor'] = 'hand2'
-start_running_button.pack(anchor = E)
+start_running_button.pack(anchor = CENTER, pady=(0,10))
 table1.pack()
 game_frame.pack()
 game_scroll.config(command=table1.yview)
@@ -364,13 +371,13 @@ sort_frame = ttk.Frame(filters_frame)
 sort_frame.pack(anchor = W,side='left')
 sort_type = IntVar()
 sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=history_filter_click)
-sort1.pack( anchor = W )
+sort1.pack( anchor = W, pady=(10,0) )
 sort1['cursor'] = 'hand2'
 sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=history_filter_click)
 sort2.pack( anchor = W )
 sort2['cursor'] = 'hand2'
 sort3 = ttk.Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=history_filter_click)
-sort3.pack( anchor = W)
+sort3.pack( anchor = W, pady=(0,10))
 sort3['cursor'] = 'hand2'
 #Dates Within
 dates_frame = ttk.Frame(filters_frame)
@@ -417,7 +424,7 @@ table2.heading("Profitibility",text="Profitibility",anchor=CENTER)
 table2.pack()
 export_history = ttk.Button(tab2, text ="Export History", command = export_history_click)
 export_history['cursor'] = 'hand2'
-export_history.pack()
+export_history.pack(pady=10)
 print("2 Tables created")
 tabControl.bind('<<NotebookTabChanged>>', history_tab_clicked)
 
