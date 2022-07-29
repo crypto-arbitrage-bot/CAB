@@ -5,7 +5,7 @@ from os.path import exists
 import pandas as pd
 from pathlib import Path
 import os
-
+from datetime import datetime
 
 class History:
     """
@@ -34,6 +34,8 @@ class History:
         """
         Adds new data to the history.
         """
+        current_time = datetime.now()
+        data['Time']=current_time.strftime('%m-%d-%Y')+" "+data['Time']
         self.history = pd.concat([self.history, data])
         self.history.to_excel(self.filename + ".xlsx", sheet_name='a', index = False)
         print("Append history")

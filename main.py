@@ -273,7 +273,7 @@ def update_theme():
     window.configure(bg=bgColor)
 
 data =[]
-selected_option = 0
+selected_option = 1
 sort_option = 0
 api_obj = API(selected_option)
 history_obj = History()
@@ -344,7 +344,7 @@ game_scroll.config(command=table1.yview)
 table1['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitibility')
 # format our column
 table1.column("#0", width=0,  stretch=NO)
-table1.column("Time",anchor=CENTER, width=80)
+table1.column("Time",anchor=CENTER, width=160)
 table1.column("Exchange",anchor=CENTER,width=80)
 table1.column("Profit Link",anchor=CENTER,width=160)
 table1.column("Profitibility",anchor=CENTER,width=100)
@@ -404,7 +404,7 @@ game_scroll.config(command=table2.yview)
 table2['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitibility')
 # format our column
 table2.column("#0", width=0,  stretch=NO)
-table2.column("Time",anchor=CENTER, width=80)
+table2.column("Time",anchor=CENTER, width=160)
 table2.column("Exchange",anchor=CENTER,width=80)
 table2.column("Profit Link",anchor=CENTER,width=160)
 table2.column("Profitibility",anchor=CENTER,width=120)
