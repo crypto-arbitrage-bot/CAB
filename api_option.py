@@ -105,7 +105,7 @@ class Coinbase(APIOption): # pylint: disable=too-few-public-methods
                 exchange_rates[currency2.lower()] = float(request_data['data']['rates'][currency2])
 
             results_dict[currency] = exchange_rates
-        
+
         # get server time
         request = requests.get("https://api.coinbase.com/v2/time")
         tmp = json.loads(request.text)
@@ -155,15 +155,15 @@ class FTX(APIOption): # pylint: disable=too-few-public-methods
         print(value)
         response = json.loads(markets.text)
         for i in range(0,len(response['result'])):
-            for curr_index1, currency1 in enumerate(currencies_list):
+            for currency1 in currencies_list:
                 # get exchange rates between 2 cryptocurrencies
                 curr = currency1
-                for curr_index2, currency2 in enumerate(currencies_list):
+                for currency2 in currencies_list:
                     curr_ = curr + '/' + currency2
                     if response['result'][i]['name'] == (curr_.upper()):
                         result = response['result'][i]['price']
-                        results_index1 = currencies_list[curr_index1]
-                        results_index2 = currencies_list[curr_index2]
+                        results_index1 = currency1
+                        results_index2 = currency2
                         results_dict[results_index1][results_index2] = result
         for currency1 in currencies_list:
             for currency2 in currencies_list:

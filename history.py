@@ -2,10 +2,10 @@
 Holds the History class.
 """
 from os.path import exists
-import pandas as pd
 from pathlib import Path
 import os
 from datetime import datetime
+import pandas as pd
 
 class History:
     """
@@ -47,8 +47,9 @@ class History:
         print("Export history")
         print(self.history)
         path_to_download_folder = str(os.path.join(Path.home(), "Downloads"))
-        self.history.to_excel(path_to_download_folder + "/" + self.filename + ".xlsx", sheet_name='a', index = False)
-        
+        self.history.to_excel(path_to_download_folder + "/" + self.filename +
+        ".xlsx", sheet_name='a', index = False)
+
 
 # for testing
 

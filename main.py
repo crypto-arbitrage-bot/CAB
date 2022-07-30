@@ -5,23 +5,21 @@ Handles the GUI part of the application and transfers data between the APIs, Com
 History parts of the application.
 """
 
-from http import server
 import json
-from pyexpat import version_info
 from tkinter import * # pylint: disable=wildcard-import, unused-wildcard-import
 from tkinter import ttk
 import pandas as pd
+import requests
 from api import API
 from history import History
 from computation import Computation
-import requests
 
 def api_click():
     """
     Handles API selection clicks.
     """
     selection = "You selected the option " + str(api_var.get())
-    global selected_option, labelText
+    global selected_option, labelText #pylint: disable=global-variable-not-assigned
     selected_option = int(api_var.get())
     if selected_option == 1:
         labelText.set("CoinGecko API selected.")
@@ -47,13 +45,13 @@ def print_msg(msg):
     label = Label(win, text = msg)
     label.pack(anchor=CENTER)
     win.mainloop()
-    
+
 def check_version():
     """
     Handles check version clicks. Checks current version against server version in Heroku backend.
     """
     #sample_json = "{\"version\":\"0.6.0\"}"
-    
+
     # get current server version
     request = requests.get("https://cab-version.herokuapp.com/version")
     server_version = json.loads(request.text)['version']
@@ -74,10 +72,12 @@ def check_version():
     if up_to_date:
         print_msg("Version is up to date.")
     elif greater:
-        print_msg("Warning: Version is newer than the current release version. You may experience unexpected bugs and/or crashes.")
+        msg_text = "Warning: Version is newer than the current release version. "
+        msg_text += "You may experience unexpected bugs and/or crashes."
+        print_msg(msg_text)
     else:
         print_msg("Version is outdated. Please update through the CAB website.")
-        
+
 def history_filter_click():
     """
     Handles history filter clicks.
@@ -117,8 +117,8 @@ def history_update_table(data_obj):
     count_row = data_obj.shape[0]
 
     # limits how many rows are displayed
-    if(count_row > 500):
-        count_row = 500
+    count_row = min(count_row, 500)
+
     for i in range(count_row):
         first_v = data_obj['Time'].values[i]
         second_v = data_obj['Exchange'].values[i]
@@ -179,8 +179,8 @@ def running_click():
     complete_data = pd.DataFrame()
 
     # no profitable data
-    if(len(data)==0):
-       print_msg("No profitable trades found")
+    if len(data) == 0:
+        print_msg("No profitable trades found")
     # profitable data
     else:
         for row in range(len(data)):
@@ -386,7 +386,9 @@ game_frame = Frame(tab1)
 
 # retreive data label
 retrieveDataLabelText = StringVar()
-retrieveDataLabel = ttk.Label(tab1, textvariable=retrieveDataLabelText, font=("Arial", 10), justify='center')
+retrieveDataLabel = ttk.Label(tab1, textvariable=retrieveDataLabelText,
+font=("Arial", 10), justify='center')
+
 retrieveDataLabelText.set("Begin retrieving data from the selected API.")
 retrieveDataLabel.pack(pady=(0,10))
 
@@ -425,7 +427,9 @@ table1['cursor'] = 'hand2'
 
 # History filters label
 historyFiltersLabelText = StringVar()
-historyFiltersLabel = ttk.Label(tab2, textvariable=historyFiltersLabelText, font=("Arial", 10), justify='center')
+historyFiltersLabel = ttk.Label(tab2, textvariable=historyFiltersLabelText,
+font=("Arial", 10), justify='center')
+
 historyFiltersLabelText.set("")
 historyFiltersLabel.pack(pady=(10,0))
 
@@ -434,16 +438,24 @@ filters_frame = ttk.Frame(tab2)
 sort_frame = ttk.Frame(filters_frame)
 sort_frame.pack(anchor = W,side='left')
 sort_type = IntVar()
-sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=history_filter_click)
+sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type,
+value=1,command=history_filter_click)
+
 sort1.pack( anchor = W, pady=(10,0) )
 sort1['cursor'] = 'hand2'
-sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=history_filter_click)
+sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type,
+value=2,command=history_filter_click)
+
 sort2.pack( anchor = W )
 sort2['cursor'] = 'hand2'
-sort3 = ttk.Radiobutton(sort_frame, text="Profitability", variable=sort_type, value=3,command=history_filter_click)
+sort3 = ttk.Radiobutton(sort_frame, text="Profitability", variable=sort_type,
+value=3,command=history_filter_click)
+
 sort3.pack( anchor = W, pady=(0,10))
 sort3['cursor'] = 'hand2'
-historyFiltersLabelText.set("Use the filter options below to change how the history table is displayed.")
+historyFiltersLabelTextCurrent = "Use the filter options below to change how the "
+historyFiltersLabelTextCurrent += "history table is displayed."
+historyFiltersLabelText.set(historyFiltersLabelTextCurrent)
 # Dates Within
 dates_frame = ttk.Frame(filters_frame)
 dates_frame.pack(anchor = W,side='left')
@@ -492,7 +504,9 @@ table2.pack()
 
 # export history label
 exportHistoryLabelText = StringVar()
-exportHistoryLabel = ttk.Label(tab2, textvariable=exportHistoryLabelText, font=("Arial", 10), justify='center')
+exportHistoryLabel = ttk.Label(tab2, textvariable=exportHistoryLabelText,
+font=("Arial", 10), justify='center')
+
 exportHistoryLabelText.set("Export the history table to a file in the Downloads folder.")
 exportHistoryLabel.pack(pady=10)
 
