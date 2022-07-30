@@ -21,8 +21,16 @@ def api_click():
     Handles API selection clicks.
     """
     selection = "You selected the option " + str(api_var.get())
-    global selected_option
+    global selected_option, labelText
     selected_option = int(api_var.get())
+    if selected_option == 1:
+        labelText.set("CoinGecko API selected.")
+    if selected_option == 2:
+        labelText.set("Coinbase API selected.")
+    if selected_option == 3:
+        labelText.set("FTX API selected.")
+    if selected_option == 4:
+        labelText.set("Binance API selected.")
     print(selection)
 
 def export_history_click():
@@ -141,7 +149,7 @@ def running_click():
         exchange = "FTX"
     if selected_option == 4:
         exchange = "Binance"
-    data = computation_obj.scan_graph() #data hold link with profitibility
+    data = computation_obj.scan_graph() #data hold link with profitibality
     complete_data = pd.DataFrame()
     if(len(data)==0):
        print_msg("No profitable trades found")
@@ -178,6 +186,9 @@ def update_theme():
 
     # update TFrame style
     style.configure('TFrame', background=bgColor)
+
+    # update TLabel style
+    style.configure('TLabel', background=bgColor, foreground=textColor)
 
     # update TButton style
     style.configure('TButton', background=bgColor, foreground=textColor)
@@ -284,9 +295,9 @@ textColor = ''
 themeButtonImage = ''
 version = 0.5
 window = Tk()
-window.title("CAB APPLICATION")
-window.configure(width=600, height=400)
-window.geometry("600x400")
+window.title("The Crypto Arbitrage Bot")
+window.configure(width=800, height=500)
+window.geometry("800x500")
 window.configure(bg=bgColor)
 
 # move window center
@@ -298,16 +309,23 @@ style.theme_use('default')
 
 windowExists = True
 
+topWindowFrame = ttk.Frame(window)
+topWindowFrame.pack(side=TOP, anchor=W)
+
 # theme button
-themeButton = ttk.Button(window, command = update_theme,
+themeButton = ttk.Button(topWindowFrame, command = update_theme,
 style="ThemeButton.TButton", image=themeButtonImage)
 
 themeButton['cursor'] = 'hand2'
-themeButton.pack()
+themeButton.pack(side=LEFT, padx=10, pady=10)
 
 update_theme()
-versionButton = ttk.Button(window, command = check_version,text="Check Version")
-versionButton.pack(side=TOP,anchor=E)
+
+# check version button
+versionButton = ttk.Button(topWindowFrame, command = check_version,text="Check Version")
+versionButton['cursor'] = 'hand2'
+versionButton.pack(side=LEFT, pady=10)
+
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 
@@ -315,63 +333,81 @@ tabControl.add(tab1, text ='Home')
 tabControl.add(tab2, text ='History')
 tabControl.pack(expand = 1, fill ="both")
 
+labelText = StringVar()
+selectAPILabel = ttk.Label(tab1, textvariable=labelText, font=("Arial", 10))
+labelText.set("Select an API before starting the program.")
+selectAPILabel.pack(anchor=W, padx=5, pady=(10,0))
+
 api_var = IntVar()
 R1 = ttk.Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=api_click)
-R1.pack( anchor = W )
+R1.pack( anchor = W, padx=10, pady=(10,0) )
 R1['cursor'] = 'hand2'
 R2 = ttk.Radiobutton(tab1, text="Coinbase", variable=api_var, value=2,command=api_click)
-R2.pack( anchor = W )
+R2.pack( anchor = W, padx=10)
 R2['cursor'] = 'hand2'
 R3 = ttk.Radiobutton(tab1, text="FTX", variable=api_var, value=3,command=api_click)
-R3.pack( anchor = W)
+R3.pack( anchor = W, padx=10)
 R3['cursor'] = 'hand2'
 R4 = ttk.Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=api_click)
-R4.pack( anchor = W)
+R4.pack( anchor = W, padx=10)
 R4['cursor'] = 'hand2'
 game_frame = Frame(tab1)
 
 #scrollbar
 game_scroll = ttk.Scrollbar(game_frame)
 game_scroll.pack(side=RIGHT, fill=Y)
-table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=5)
+table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=6)
+
+retrieveDataLabelText = StringVar()
+retrieveDataLabel = ttk.Label(tab1, textvariable=retrieveDataLabelText, font=("Arial", 10), justify='center')
+retrieveDataLabelText.set("Begin retrieving data from the selected API.")
+retrieveDataLabel.pack(pady=(0,10))
+
 start_running_button = ttk.Button(tab1, text ="Retrieve Data", command = running_click)
 start_running_button['cursor'] = 'hand2'
-start_running_button.pack(anchor = E)
+start_running_button.pack(anchor = CENTER, pady=(0,10))
 table1.pack()
 game_frame.pack()
 game_scroll.config(command=table1.yview)
 #define our column
-table1['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitibility')
+table1['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitability')
 # format our column
 table1.column("#0", width=0,  stretch=NO)
 table1.column("Time",anchor=CENTER, width=160)
 table1.column("Exchange",anchor=CENTER,width=80)
 table1.column("Profit Link",anchor=CENTER,width=160)
-table1.column("Profitibility",anchor=CENTER,width=100)
+table1.column("Profitability",anchor=CENTER,width=100)
 #Create Headings
 table1.heading("#0",text="",anchor=CENTER)
 table1.heading("Time",text="Time",anchor=CENTER)
 table1.heading("Exchange",text="Exchange",anchor=CENTER)
 table1.heading("Profit Link",text="Profit Link",anchor=CENTER)
-table1.heading("Profitibility",text="Profitibility",anchor=CENTER)
+table1.heading("Profitability",text="Profitability",anchor=CENTER)
 table1.pack()
 table1['cursor'] = 'hand2'
 
 #HISTORY TAB STUFF
 #FILTERS
+
+historyFiltersLabelText = StringVar()
+historyFiltersLabel = ttk.Label(tab2, textvariable=historyFiltersLabelText, font=("Arial", 10), justify='center')
+historyFiltersLabelText.set("")
+historyFiltersLabel.pack(pady=(10,0))
+
 filters_frame = ttk.Frame(tab2)
 sort_frame = ttk.Frame(filters_frame)
 sort_frame.pack(anchor = W,side='left')
 sort_type = IntVar()
 sort1 = ttk.Radiobutton(sort_frame, text="Time", variable=sort_type, value=1,command=history_filter_click)
-sort1.pack( anchor = W )
+sort1.pack( anchor = W, pady=(10,0) )
 sort1['cursor'] = 'hand2'
 sort2 = ttk.Radiobutton(sort_frame, text="Exchange", variable=sort_type, value=2,command=history_filter_click)
 sort2.pack( anchor = W )
 sort2['cursor'] = 'hand2'
-sort3 = ttk.Radiobutton(sort_frame, text="Profitibility", variable=sort_type, value=3,command=history_filter_click)
-sort3.pack( anchor = W)
+sort3 = ttk.Radiobutton(sort_frame, text="Profitability", variable=sort_type, value=3,command=history_filter_click)
+sort3.pack( anchor = W, pady=(0,10))
 sort3['cursor'] = 'hand2'
+historyFiltersLabelText.set("Use the filter options below to change how the history table is displayed.")
 #Dates Within
 dates_frame = ttk.Frame(filters_frame)
 dates_frame.pack(anchor = W,side='left')
@@ -396,25 +432,30 @@ table_frame2.pack()
 #scrollbar
 game_scroll = ttk.Scrollbar(table_frame2)
 game_scroll.pack(side=RIGHT, fill=Y)
-table2 = ttk.Treeview(table_frame2,yscrollcommand=game_scroll.set,height=5)
+table2 = ttk.Treeview(table_frame2,yscrollcommand=game_scroll.set,height=7)
 table2.pack()
 table2['cursor'] = 'hand2'
 game_scroll.config(command=table2.yview)
 #define our column
-table2['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitibility')
+table2['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitability')
 # format our column
 table2.column("#0", width=0,  stretch=NO)
 table2.column("Time",anchor=CENTER, width=160)
 table2.column("Exchange",anchor=CENTER,width=80)
 table2.column("Profit Link",anchor=CENTER,width=160)
-table2.column("Profitibility",anchor=CENTER,width=120)
+table2.column("Profitability",anchor=CENTER,width=120)
 #Create Headings
 table2.heading("#0",text="",anchor=CENTER)
 table2.heading("Time",text="Time",anchor=CENTER)
 table2.heading("Exchange",text="Exchange",anchor=CENTER)
 table2.heading("Profit Link",text="Profit Link",anchor=CENTER)
-table2.heading("Profitibility",text="Profitibility",anchor=CENTER)
+table2.heading("Profitability",text="Profitability",anchor=CENTER)
 table2.pack()
+
+exportHistoryLabelText = StringVar()
+exportHistoryLabel = ttk.Label(tab2, textvariable=exportHistoryLabelText, font=("Arial", 10), justify='center')
+exportHistoryLabelText.set("Export the history table to a file in the Downloads folder.")
+exportHistoryLabel.pack(pady=10)
 export_history = ttk.Button(tab2, text ="Export History", command = export_history_click)
 export_history['cursor'] = 'hand2'
 export_history.pack()
