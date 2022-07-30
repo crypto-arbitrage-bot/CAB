@@ -50,14 +50,31 @@ def print_msg(msg):
     
 def check_version():
     """
-    Handles check version clicks. Checks current version against Heroku backend.
+    Handles check version clicks. Checks current version against server version in Heroku backend.
     """
-    request = requests.get("https://cab-version.herokuapp.com/version")
+    #sample_json = "{\"version\":\"0.6.0\"}"
     
-    server_version = json.loads(request.text)
+    # get current server version
+    request = requests.get("https://cab-version.herokuapp.com/version")
+    server_version = json.loads(request.text)['version']
+    server_version = server_version.split(".")
+
+    # check server version against app version
+    up_to_date = True
+    greater = False
+    for i,digit in enumerate(server_version):
+        if not version[i] == int(digit):
+            up_to_date = False
+            if version[i] > int(digit):
+                greater = True
+            break
     print(server_version)
-    if(server_version['version'] == version):
+
+    # print appropriate message
+    if up_to_date:
         print_msg("Version is up to date.")
+    elif greater:
+        print_msg("Warning: Version is newer than the current release version. You may experience unexpected bugs and/or crashes.")
     else:
         print_msg("Version is outdated. Please update through the CAB website.")
         
@@ -306,7 +323,7 @@ darkMode = True
 bgColor = ''
 textColor = ''
 themeButtonImage = ''
-version = 0.5
+version = (0,6,0)
 
 # configure window
 window = Tk()
