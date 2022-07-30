@@ -41,7 +41,7 @@ def export_history_click():
 
 def print_msg(msg):
     """
-    Prints a message to the user.
+    Prints a message to the user (in a popup).
     """
     win = Toplevel(window)
     label = Label(win, text = msg)
@@ -50,22 +50,24 @@ def print_msg(msg):
     
 def check_version():
     """
-    Handles check version clicks.
+    Handles check version clicks. Checks current version against Heroku backend.
     """
     request = requests.get("https://cab-version.herokuapp.com/version")
     
     server_version = json.loads(request.text)
     print(server_version)
     if(server_version['version'] == version):
-        print_msg("Version is up to date")
+        print_msg("Version is up to date.")
     else:
-        print_msg("Version is outdated.Please update through our website")
+        print_msg("Version is outdated. Please update through the CAB website.")
         
 def history_filter_click():
     """
     Handles history filter clicks.
     """
     global data
+
+    # get current filter
     if sort_type.get() == 1:
         print("Sort by time")
         data = history_obj.get_history().sort_values(by='Time', ascending=order_type.get())
@@ -75,6 +77,7 @@ def history_filter_click():
     if sort_type.get() == 3:
         print("Sort by Profitability")
         data = history_obj.get_history().sort_values(by='Profitability', ascending=order_type.get())
+
     history_update_table(data)
 
 def history_tab_clicked(event):
@@ -95,6 +98,8 @@ def history_update_table(data_obj):
     for i in table2.get_children():
         table2.delete(i)
     count_row = data_obj.shape[0]
+
+    # limits how many rows are displayed
     if(count_row > 500):
         count_row = 500
     for i in range(count_row):
@@ -129,15 +134,19 @@ def running_update_table(data_obj):
 
 def running_click():
     """
-    Handles start running clicks.
+    Handles retrieve data clicks.
     """
-    print("Running clicked")
+    print("Retrieve data clicked")
     global data, api_obj, computation_obj
+
+    # retrieve selected API data
     api_obj = API(selected_option)
     full_data = api_obj.get_data()
     time = full_data[0]
     data = full_data[1]
     print(data)
+
+    # perform computation
     computation_obj = Computation(crypto_data=data)
     computation_obj.generate_graph()
     exchange = "None"
@@ -149,10 +158,13 @@ def running_click():
         exchange = "FTX"
     if selected_option == 4:
         exchange = "Binance"
-    data = computation_obj.scan_graph() #data hold link with profitibality
+    data = computation_obj.scan_graph() # data holds links with profitability
     complete_data = pd.DataFrame()
+
+    # no profitable data
     if(len(data)==0):
        print_msg("No profitable trades found")
+    # profitable data
     else:
         for row in range(len(data)):
             full_data = {
@@ -283,6 +295,7 @@ def update_theme():
     # update window style
     window.configure(bg=bgColor)
 
+# set variables' initial values
 data =[]
 selected_option = 1
 sort_option = 0
@@ -294,21 +307,19 @@ bgColor = ''
 textColor = ''
 themeButtonImage = ''
 version = 0.5
+
+# configure window
 window = Tk()
 window.title("The Crypto Arbitrage Bot")
 window.configure(width=800, height=500)
 window.geometry("800x500")
 window.configure(bg=bgColor)
-
-# move window center
-
 tabControl = ttk.Notebook(window)
-
 style = ttk.Style()
 style.theme_use('default')
-
 windowExists = True
 
+# horizontal elements frame (contains theme button and check version button)
 topWindowFrame = ttk.Frame(window)
 topWindowFrame.pack(side=TOP, anchor=W)
 
@@ -329,15 +340,18 @@ versionButton.pack(side=LEFT, pady=10)
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
 
+# Home/History tab control
 tabControl.add(tab1, text ='Home')
 tabControl.add(tab2, text ='History')
 tabControl.pack(expand = 1, fill ="both")
 
+# select API label
 labelText = StringVar()
 selectAPILabel = ttk.Label(tab1, textvariable=labelText, font=("Arial", 10))
 labelText.set("Select an API before starting the program.")
 selectAPILabel.pack(anchor=W, padx=5, pady=(10,0))
 
+# select API options
 api_var = IntVar()
 R1 = ttk.Radiobutton(tab1, text="CoinGecko", variable=api_var, value=1,command=api_click)
 R1.pack( anchor = W, padx=10, pady=(10,0) )
@@ -353,23 +367,27 @@ R4.pack( anchor = W, padx=10)
 R4['cursor'] = 'hand2'
 game_frame = Frame(tab1)
 
-#scrollbar
-game_scroll = ttk.Scrollbar(game_frame)
-game_scroll.pack(side=RIGHT, fill=Y)
-table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=6)
-
+# retreive data label
 retrieveDataLabelText = StringVar()
 retrieveDataLabel = ttk.Label(tab1, textvariable=retrieveDataLabelText, font=("Arial", 10), justify='center')
 retrieveDataLabelText.set("Begin retrieving data from the selected API.")
 retrieveDataLabel.pack(pady=(0,10))
 
+# retrieve data button
 start_running_button = ttk.Button(tab1, text ="Retrieve Data", command = running_click)
 start_running_button['cursor'] = 'hand2'
 start_running_button.pack(anchor = CENTER, pady=(0,10))
+
+# scrollbar
+game_scroll = ttk.Scrollbar(game_frame)
+game_scroll.pack(side=RIGHT, fill=Y)
+
+# Home table
+table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=6)
 table1.pack()
 game_frame.pack()
 game_scroll.config(command=table1.yview)
-#define our column
+# define our column
 table1['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitability')
 # format our column
 table1.column("#0", width=0,  stretch=NO)
@@ -386,14 +404,15 @@ table1.heading("Profitability",text="Profitability",anchor=CENTER)
 table1.pack()
 table1['cursor'] = 'hand2'
 
-#HISTORY TAB STUFF
-#FILTERS
+# History tab
 
+# History filters label
 historyFiltersLabelText = StringVar()
 historyFiltersLabel = ttk.Label(tab2, textvariable=historyFiltersLabelText, font=("Arial", 10), justify='center')
 historyFiltersLabelText.set("")
 historyFiltersLabel.pack(pady=(10,0))
 
+# History table filter options
 filters_frame = ttk.Frame(tab2)
 sort_frame = ttk.Frame(filters_frame)
 sort_frame.pack(anchor = W,side='left')
@@ -408,30 +427,32 @@ sort3 = ttk.Radiobutton(sort_frame, text="Profitability", variable=sort_type, va
 sort3.pack( anchor = W, pady=(0,10))
 sort3['cursor'] = 'hand2'
 historyFiltersLabelText.set("Use the filter options below to change how the history table is displayed.")
-#Dates Within
+# Dates Within
 dates_frame = ttk.Frame(filters_frame)
 dates_frame.pack(anchor = W,side='left')
-#ORDER
+# ORDER
 order_frame = ttk.Frame(filters_frame)
 order_frame.pack(anchor = W,side='right')
 order_type = BooleanVar()
 order1 = ttk.Radiobutton(order_frame, text="Ascending",
 variable=order_type, value=True,command=history_filter_click)
-
 order1.pack( anchor = W )
 order1['cursor'] = 'hand2'
 order2 = ttk.Radiobutton(order_frame, text="Descending",
 variable=order_type, value=False,command=history_filter_click)
-
 order2.pack( anchor = W )
 order2['cursor'] = 'hand2'
 filters_frame.pack()
-#TABLE FRAME
+
+# TABLE FRAME
 table_frame2 = ttk.Frame(tab2)
 table_frame2.pack()
-#scrollbar
+
+# scrollbar
 game_scroll = ttk.Scrollbar(table_frame2)
 game_scroll.pack(side=RIGHT, fill=Y)
+
+# history table
 table2 = ttk.Treeview(table_frame2,yscrollcommand=game_scroll.set,height=7)
 table2.pack()
 table2['cursor'] = 'hand2'
@@ -452,13 +473,17 @@ table2.heading("Profit Link",text="Profit Link",anchor=CENTER)
 table2.heading("Profitability",text="Profitability",anchor=CENTER)
 table2.pack()
 
+# export history label
 exportHistoryLabelText = StringVar()
 exportHistoryLabel = ttk.Label(tab2, textvariable=exportHistoryLabelText, font=("Arial", 10), justify='center')
 exportHistoryLabelText.set("Export the history table to a file in the Downloads folder.")
 exportHistoryLabel.pack(pady=10)
+
+# export history button
 export_history = ttk.Button(tab2, text ="Export History", command = export_history_click)
 export_history['cursor'] = 'hand2'
 export_history.pack()
+
 print("2 Tables created")
 tabControl.bind('<<NotebookTabChanged>>', history_tab_clicked)
 
