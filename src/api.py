@@ -2,7 +2,7 @@
 Holds the API class.
 """
 
-from api_option import CoinGecko, Coinbase, FTX, Binance, KuCoin, Kraken
+from api_option import CoinGecko, Coinbase, FTX, Binance
 
 class API:
     """
@@ -28,10 +28,6 @@ class API:
             api_option = FTX()
         if self.selected_option == 4:
             api_option = Binance()
-        if self.selected_option == 5:
-            api_option = KuCoin()
-        if self.selected_option == 6:
-            api_option = Kraken()
 
         return api_option
 
@@ -42,7 +38,3 @@ class API:
         """
         api_option = self.create_api_option()
         return api_option.retrieve_data()
-
-# driver code
-# obj = API(3)
-# obj.get_data()

@@ -26,7 +26,7 @@ class History:
         file_exists = exists(self.filename + ".xlsx")
         print("Get history")
         if file_exists:
-            data= pd.read_excel(self.filename + ".xlsx", sheet_name='a')
+            data= pd.read_excel("resources/" + self.filename + ".xlsx", sheet_name='a')
             self.history = pd.concat([self.history, data])
         return self.history
 
@@ -37,7 +37,7 @@ class History:
         current_time = datetime.now()
         data['Time']=current_time.strftime('%m-%d-%Y')+" "+data['Time']
         self.history = pd.concat([self.history, data])
-        self.history.to_excel(self.filename + ".xlsx", sheet_name='a', index = False)
+        self.history.to_excel("resources/" + self.filename + ".xlsx", sheet_name='a', index = False)
         print("Append history")
 
     def export_history(self):
@@ -49,22 +49,3 @@ class History:
         path_to_download_folder = str(os.path.join(Path.home(), "Downloads"))
         self.history.to_excel(path_to_download_folder + "/" + self.filename +
         ".xlsx", sheet_name='a', index = False)
-
-
-# for testing
-
-#obj = History("history2")
-#if(not obj.get_history().empty): print(str(obj.get_history()))
-
-#data = {
-#    "Time": 0.5,
-#    "Exchange": "FTX",
-#    "Path": [['a','b']],
-#    "Profitability": 0.1
-#}
-#df = pd.DataFrame(data)
-#obj.append_history(df)
-#obj.append_history(df)
-#print(str(obj.get_history()))
-#obj.export_history()
-#print("History exported")

@@ -25,7 +25,6 @@ class Computation:
             "btc":0.00543429,"ltc":1.98768,"eos":113.681}}
         else:
             self.test = crypto_data
-        #self.age = age Sets to global variable
         self.graph = nx.DiGraph()
 
     def generate_graph(self):
@@ -61,7 +60,3 @@ class Computation:
         arb_checks = arb_checks[arb_checks['Result'] > 1.0]
         arb_checks =arb_checks.sort_values(by='Result', ascending=False)
         return arb_checks
-
-#obj = Computation()
-#obj.generate_graph()
-#obj.scan_graph()

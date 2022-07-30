@@ -241,36 +241,3 @@ class Binance(APIOption): # pylint: disable=too-few-public-methods
         time_string += str(time.second)
 
         return ((time_string, results_dict))
-
-class KuCoin(APIOption): # pylint: disable=too-few-public-methods
-    """
-    A concrete implementation of the abstract APIOption class involving the KuCoin API.
-    """
-    # https://api.kucoin.com/api/v1/market/histories?symbol=ETH-USDT
-    # override abstract method retrieve_data()
-    def retrieve_data(self):
-        """
-        Retrieves market data from the KuCoin API.
-        """
-        print("KuCoin retrieve_data()")
-
-class Kraken(APIOption): # pylint: disable=too-few-public-methods
-    """
-    A concrete implementation of the abstract APIOption class involving the Kraken API.
-    """
-    # https://api.kraken.com/0/public/Trades?pair=BTCUSDT
-    # override abstract method retrieve_data()
-    def retrieve_data(self):
-        """
-        Retrieves market data from the Kraken API.
-        """
-        print("Kraken retrieve_data()")
-
-# driver code
-# apiOption = CoinGecko()
-# apiOption.retrieve_data()
-# print()
-# apiOption = Binance()
-# apiOption.retrieve_data()
-# apiOption = FTX()
-# apiOption.retrieve_data()

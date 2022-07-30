@@ -50,8 +50,6 @@ def check_version():
     """
     Handles check version clicks. Checks current version against server version in Heroku backend.
     """
-    #sample_json = "{\"version\":\"0.6.0\"}"
-
     # get current server version
     request = requests.get("https://cab-version.herokuapp.com/version")
     server_version = json.loads(request.text)['version']
@@ -299,14 +297,14 @@ def update_theme():
         style.map('ThemeButton.TButton',
             background=[('pressed', 'white'),
                         ('active', 'white')])
-        themeButtonImage = PhotoImage(file = "dark_mode.png")
+        themeButtonImage = PhotoImage(file = "resources/dark_mode.png")
         themeButton['image'] = themeButtonImage
     else:
         style.configure("ThemeButton.TButton", background='#333333')
         style.map('ThemeButton.TButton',
             background=[('pressed', '#333333'),
                         ('active', '#333333')])
-        themeButtonImage = PhotoImage(file = "light_mode.png")
+        themeButtonImage = PhotoImage(file = "resources/light_mode.png")
         themeButton['image'] = themeButtonImage
 
     # update window style
