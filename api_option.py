@@ -29,7 +29,11 @@ class CoinGecko(APIOption): # pylint: disable=too-few-public-methods
         """
         id_list = ['bitcoin-cash', 'ethereum', 'bitcoin','litecoin', 'eos','ripple','polkadot']
         vs_currencies_list = ['bch','eth','btc','ltc', 'eos','xrp','dot']
+
+        # base URL for API call
         base = 'https://api.coingecko.com/api/v3/simple/price?ids='
+
+        # put currency IDs in API call
         id_remaining = len(id_list)
         for coin in id_list:
             base += coin
@@ -37,14 +41,20 @@ class CoinGecko(APIOption): # pylint: disable=too-few-public-methods
             if id_remaining > 0:
                 base += ','
         base += '&vs_currencies='
+
+        # put vs currency IDs in API call
         vs_remaining = len(vs_currencies_list)
         for vs_currency in vs_currencies_list:
             base += vs_currency
             vs_remaining -= 1
             if vs_remaining > 0:
                 base += ','
+
+        # make request
         request = requests.get(base)
         value = request.headers['Date']
+
+        # get results
         result = re.findall(r"\w\w\:\w\w\:\w\w", value)
         time = result[0]
         results_dict = json.loads(request.text)
@@ -82,18 +92,21 @@ class Coinbase(APIOption): # pylint: disable=too-few-public-methods
         currencies_list = ['bch','eth','btc','ltc','eos','xrp','dot']
         results_dict = {}
 
+        # get exchange rates for each currency
         for currency in currencies_list:
             base = 'https://api.coinbase.com/v2/exchange-rates?currency='
             base += currency
             request = requests.get(base)
             request_data = json.loads(request.text)
             exchange_rates = {}
+            # save exchange rates for each type of currency listed above
             for currency2 in currencies_list:
                 currency2 = currency2.upper()
                 exchange_rates[currency2.lower()] = float(request_data['data']['rates'][currency2])
 
             results_dict[currency] = exchange_rates
-
+        
+        # get server time
         request = requests.get("https://api.coinbase.com/v2/time")
         tmp = json.loads(request.text)
         time = float(tmp['data']['epoch'])
@@ -122,15 +135,20 @@ class FTX(APIOption): # pylint: disable=too-few-public-methods
         """
         Retrieves market data from the FTX API.
         """
+
+        # initial exchange values
         results_dict = {"eth":{"bch":99999,"eth":1.0,"btc":99999,"ltc":99999,"usd":99999},
         "usd":{"bch":99999,"eth":99999,"btc":99999,"ltc":99999,"usd":1.0},
         "ltc":{"bch":99999,"eth":99999,"btc":99999,"ltc":1.0,"usd":99999},
         "btc":{"bch":99999,"eth":99999,"btc":1.0,"ltc":99999,"usd":99999},
         "bch":{"bch":1.0,"eth":99999,"btc":99999,"ltc":99999,"usd":99999}}
-
         currencies_list = ['bch','eth','btc','ltc', 'usd']
+
+        # make API request
         url = 'https://ftx.com/api/markets'
         markets = requests.get(url)
+
+        # get results
         value = markets.headers['Date']
         result = re.findall(r"\w\w\:\w\w\:\w\w", value)
         time = result[0]
@@ -138,6 +156,7 @@ class FTX(APIOption): # pylint: disable=too-few-public-methods
         response = json.loads(markets.text)
         for i in range(0,len(response['result'])):
             for curr_index1, currency1 in enumerate(currencies_list):
+                # get exchange rates between 2 cryptocurrencies
                 curr = currency1
                 for curr_index2, currency2 in enumerate(currencies_list):
                     curr_ = curr + '/' + currency2
@@ -148,6 +167,7 @@ class FTX(APIOption): # pylint: disable=too-few-public-methods
                         results_dict[results_index1][results_index2] = result
         for currency1 in currencies_list:
             for currency2 in currencies_list:
+                # perform USD division to get exchange rates between 2 cryptocurrencies
                 if results_dict[currency1][currency2] == 99999:
                     usd1 = results_dict[currency1]['usd']
                     usd2 = results_dict[currency2]['usd']
@@ -156,7 +176,6 @@ class FTX(APIOption): # pylint: disable=too-few-public-methods
 
         print(results_dict)
         return ((time, results_dict))
-
 
 class Binance(APIOption): # pylint: disable=too-few-public-methods
     """
@@ -170,6 +189,8 @@ class Binance(APIOption): # pylint: disable=too-few-public-methods
         currencies_list = ['bch','eth','ltc','eos','xrp','dot']
         results_dict = {}
         usdt_prices = {}
+
+        # get exchange rates of each currency (with every other currency)
         for currency in currencies_list:
             exchange_rates = {}
             exchange_rates[currency] = 1.0
@@ -190,6 +211,8 @@ class Binance(APIOption): # pylint: disable=too-few-public-methods
                 else:
                     exchange_rates[currency2] = 0.0
             results_dict[currency] = exchange_rates
+
+        # perform USD division for unknown exchange rates
         for currency in currencies_list:
             for currency2 in currencies_list:
                 if results_dict[currency][currency2] == 0.0:
@@ -199,6 +222,7 @@ class Binance(APIOption): # pylint: disable=too-few-public-methods
 
         print(results_dict)
 
+        # get server time
         request = requests.get("https://api.binance.com/api/v3/time")
         tmp = json.loads(request.text)
         time = float(str(tmp['serverTime'])[:-3])
