@@ -15,6 +15,13 @@ Open a terminal to the directory that you downloaded the release to and run the 
 
 To run the program, run the command `python main.py`
 
+## Run the Executable
+To run the executable version of the application, navigate to the 'exec' directory
+
+Extract the .zip file located in the 'exec' directory
+
+Run the .exe file located in the extracted zip
+
 ## Usage
 
 To use CAB, select a crypto exchange and press on the button labelled "Start Running" to search for profitable links
