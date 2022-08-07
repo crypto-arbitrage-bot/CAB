@@ -66,7 +66,15 @@ def export_history_click():
     """
     Handles export history clicks.
     """
+    global window, exportHistoryLabelText
+
+    exportHistoryLabelText.set("Exporting history table...")
+    window.update()
+
     history_obj.export_history()
+
+    exportHistoryLabelText.set("History table has been exported to the Downloads folder (as a .xlsx file).")
+    window.update()
 
 def print_msg(msg):
     """
@@ -184,17 +192,8 @@ def running_click():
     """
     print("Retrieve data clicked")
     global data, api_obj, computation_obj
+    global window, retrieveDataLabelText
 
-    # retrieve selected API data
-    api_obj = API(selected_option)
-    full_data = api_obj.get_data()
-    time = full_data[0]
-    data = full_data[1]
-    print(data)
-
-    # perform computation
-    computation_obj = Computation(crypto_data=data)
-    computation_obj.generate_graph()
     exchange = "None"
     if selected_option == 1:
         exchange = "CoinGecko"
@@ -204,8 +203,28 @@ def running_click():
         exchange = "FTX"
     if selected_option == 4:
         exchange = "Binance"
+
+    retrieveDataLabelText.set("Retrieving data from " + exchange + "...")
+    window.update()
+
+    # retrieve selected API data
+    api_obj = API(selected_option)
+    full_data = api_obj.get_data()
+    time = full_data[0]
+    data = full_data[1]
+    print(data)
+
+    retrieveDataLabelText.set("Geneating profitable links from data...")
+    window.update()
+
+    # perform computation
+    computation_obj = Computation(crypto_data=data)
+    computation_obj.generate_graph()
     data = computation_obj.scan_graph() # data holds links with profitability
     complete_data = pd.DataFrame()
+
+    retrieveDataLabelText.set("Displaying profitable links from " + exchange + ".")
+    window.update()
 
     # no profitable data
     if len(data) == 0:
@@ -545,7 +564,7 @@ table2.pack(expand=TRUE, fill=BOTH, padx=20, pady=20)
 exportHistoryLabelText = StringVar()
 exportHistoryLabel = ttk.Label(tab2, textvariable=exportHistoryLabelText,
 font=("Arial", font_size), justify='center')
-exportHistoryLabelText.set("Export the history table to a file in the Downloads folder.")
+exportHistoryLabelText.set("Export the history table to the Downloads folder.")
 exportHistoryLabel.pack(pady=10)
 labels.append(exportHistoryLabel)
 
