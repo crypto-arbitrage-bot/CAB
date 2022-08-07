@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=global-statement
+# pylint: disable=global-variable-not-assigned
 """
 Handles the GUI part of the application and transfers data between the APIs, Computation, and
 History parts of the application.
@@ -14,12 +15,43 @@ from api import API
 from history import History
 from computation import Computation
 
+def resize(event): # pylint: disable=unused-argument
+    """
+    Handles the event where window resizing occurs.
+    """
+    global window, window_width, window_height, font_size, style
+    global original_window_height, original_window_height, original_font_size
+    new_window_width = window.winfo_width()
+    new_window_height = window.winfo_height()
+
+    if new_window_width != window_width or new_window_height != window_height:
+        # update window dimension variables
+        window_width = new_window_width
+        window_height = new_window_height
+
+        # get new font size
+        width_ratio = new_window_width / original_window_width
+        width_ratio = 1 + ((width_ratio - 1) / 2)
+        height_ratio = new_window_height / original_window_height
+        height_ratio = 1 + ((height_ratio - 1) / 2)
+        max_scale = max(width_ratio, height_ratio)
+        new_font_size = int(original_font_size * max_scale)
+
+        # update font size of widgets
+        for label in labels:
+            label['font'] = ("Arial", new_font_size)
+        style.configure("TButton", font=(None, new_font_size))
+        style.configure("TRadiobutton", font=(None, new_font_size))
+        style.configure("Treeview", font=(None, new_font_size - 1))
+        style.configure("Treeview.Heading", font=(None, new_font_size))
+        font_size = new_font_size
+
 def api_click():
     """
     Handles API selection clicks.
     """
     selection = "You selected the option " + str(api_var.get())
-    global selected_option, labelText #pylint: disable=global-variable-not-assigned
+    global selected_option, labelText
     selected_option = int(api_var.get())
     if selected_option == 1:
         labelText.set("CoinGecko API selected.")
@@ -35,7 +67,16 @@ def export_history_click():
     """
     Handles export history clicks.
     """
+    global window, exportHistoryLabelText
+
+    exportHistoryLabelText.set("Exporting history table...")
+    window.update()
+
     history_obj.export_history()
+
+    exportHistoryLabelText.set("History table has been exported to " +
+    "the Downloads folder (as a .xlsx file).")
+    window.update()
 
 def print_msg(msg):
     """
@@ -153,17 +194,8 @@ def running_click():
     """
     print("Retrieve data clicked")
     global data, api_obj, computation_obj
+    global window, retrieveDataLabelText
 
-    # retrieve selected API data
-    api_obj = API(selected_option)
-    full_data = api_obj.get_data()
-    time = full_data[0]
-    data = full_data[1]
-    print(data)
-
-    # perform computation
-    computation_obj = Computation(crypto_data=data)
-    computation_obj.generate_graph()
     exchange = "None"
     if selected_option == 1:
         exchange = "CoinGecko"
@@ -173,8 +205,28 @@ def running_click():
         exchange = "FTX"
     if selected_option == 4:
         exchange = "Binance"
+
+    retrieveDataLabelText.set("Retrieving data from " + exchange + "...")
+    window.update()
+
+    # retrieve selected API data
+    api_obj = API(selected_option)
+    full_data = api_obj.get_data()
+    time = full_data[0]
+    data = full_data[1]
+    print(data)
+
+    retrieveDataLabelText.set("Geneating profitable links from data...")
+    window.update()
+
+    # perform computation
+    computation_obj = Computation(crypto_data=data)
+    computation_obj.generate_graph()
     data = computation_obj.scan_graph() # data holds links with profitability
     complete_data = pd.DataFrame()
+
+    retrieveDataLabelText.set("Displaying profitable links from " + exchange + ".")
+    window.update()
 
     # no profitable data
     if len(data) == 0:
@@ -199,7 +251,7 @@ def update_theme():
     - Switches to Dark Mode when current theme is Light Mode
     - Switches to Light Mode when current theme is Dark Mode
     """
-    global bgColor, textColor, themeButtonImage, darkMode, themeButton # pylint: disable=global-variable-not-assigned
+    global bgColor, textColor, themeButtonImage, darkMode, themeButton
 
     # update global variables
     if darkMode is False:
@@ -321,10 +373,13 @@ darkMode = True
 bgColor = ''
 textColor = ''
 themeButtonImage = ''
-version = (0,6,1)
+font_size = 10
+original_font_size = font_size
+version = (0,7,0)
 
 # configure window
 window = Tk()
+parent = window.winfo_toplevel()
 window.title("The Crypto Arbitrage Bot")
 window.configure(width=800, height=500)
 window.geometry("800x500")
@@ -333,6 +388,13 @@ tabControl = ttk.Notebook(window)
 style = ttk.Style()
 style.theme_use('default')
 windowExists = True
+labels = []
+
+window.update_idletasks()
+window_width = window.winfo_width()
+window_height = window.winfo_height()
+original_window_width = window_width
+original_window_height = window_height
 
 # horizontal elements frame (contains theme button and check version button)
 topWindowFrame = ttk.Frame(window)
@@ -362,9 +424,11 @@ tabControl.pack(expand = 1, fill ="both")
 
 # select API label
 labelText = StringVar()
-selectAPILabel = ttk.Label(tab1, textvariable=labelText, font=("Arial", 10))
+selectAPILabel = ttk.Label(tab1, textvariable=labelText, font=("Arial", font_size),
+style="my.TLabel")
 labelText.set("Select an API before starting the program.")
 selectAPILabel.pack(anchor=W, padx=5, pady=(10,0))
+labels.append(selectAPILabel)
 
 # select API options
 api_var = IntVar()
@@ -380,15 +444,15 @@ R3['cursor'] = 'hand2'
 R4 = ttk.Radiobutton(tab1, text="Binance", variable=api_var, value=4,command=api_click)
 R4.pack( anchor = W, padx=10)
 R4['cursor'] = 'hand2'
-game_frame = Frame(tab1)
+game_frame = ttk.Frame(tab1)
 
 # retreive data label
 retrieveDataLabelText = StringVar()
 retrieveDataLabel = ttk.Label(tab1, textvariable=retrieveDataLabelText,
-font=("Arial", 10), justify='center')
-
+font=("Arial", font_size), justify='center')
 retrieveDataLabelText.set("Begin retrieving data from the selected API.")
 retrieveDataLabel.pack(pady=(0,10))
+labels.append(retrieveDataLabel)
 
 # retrieve data button
 start_running_button = ttk.Button(tab1, text ="Retrieve Data", command = running_click)
@@ -402,7 +466,7 @@ game_scroll.pack(side=RIGHT, fill=Y)
 # Home table
 table1 = ttk.Treeview(game_frame,yscrollcommand=game_scroll.set,height=6)
 table1.pack()
-game_frame.pack()
+game_frame.pack(expand=TRUE, fill=BOTH)
 game_scroll.config(command=table1.yview)
 # define our column
 table1['columns'] = ('Time', 'Exchange', 'Profit Link', 'Profitability')
@@ -418,7 +482,7 @@ table1.heading("Time",text="Time",anchor=CENTER)
 table1.heading("Exchange",text="Exchange",anchor=CENTER)
 table1.heading("Profit Link",text="Profit Link",anchor=CENTER)
 table1.heading("Profitability",text="Profitability",anchor=CENTER)
-table1.pack()
+table1.pack(expand=TRUE, fill=BOTH, padx=20, pady=20)
 table1['cursor'] = 'hand2'
 
 # History tab
@@ -426,10 +490,10 @@ table1['cursor'] = 'hand2'
 # History filters label
 historyFiltersLabelText = StringVar()
 historyFiltersLabel = ttk.Label(tab2, textvariable=historyFiltersLabelText,
-font=("Arial", 10), justify='center')
-
+font=("Arial", font_size), justify='center')
 historyFiltersLabelText.set("")
 historyFiltersLabel.pack(pady=(10,0))
+labels.append(historyFiltersLabel)
 
 # History table filter options
 filters_frame = ttk.Frame(tab2)
@@ -473,7 +537,7 @@ filters_frame.pack()
 
 # TABLE FRAME
 table_frame2 = ttk.Frame(tab2)
-table_frame2.pack()
+table_frame2.pack(expand=TRUE, fill=BOTH)
 
 # scrollbar
 game_scroll = ttk.Scrollbar(table_frame2)
@@ -481,7 +545,6 @@ game_scroll.pack(side=RIGHT, fill=Y)
 
 # history table
 table2 = ttk.Treeview(table_frame2,yscrollcommand=game_scroll.set,height=7)
-table2.pack()
 table2['cursor'] = 'hand2'
 game_scroll.config(command=table2.yview)
 #define our column
@@ -498,22 +561,23 @@ table2.heading("Time",text="Time",anchor=CENTER)
 table2.heading("Exchange",text="Exchange",anchor=CENTER)
 table2.heading("Profit Link",text="Profit Link",anchor=CENTER)
 table2.heading("Profitability",text="Profitability",anchor=CENTER)
-table2.pack()
+table2.pack(expand=TRUE, fill=BOTH, padx=20, pady=20)
 
 # export history label
 exportHistoryLabelText = StringVar()
 exportHistoryLabel = ttk.Label(tab2, textvariable=exportHistoryLabelText,
-font=("Arial", 10), justify='center')
-
-exportHistoryLabelText.set("Export the history table to a file in the Downloads folder.")
+font=("Arial", font_size), justify='center')
+exportHistoryLabelText.set("Export the history table to the Downloads folder.")
 exportHistoryLabel.pack(pady=10)
+labels.append(exportHistoryLabel)
 
 # export history button
 export_history = ttk.Button(tab2, text ="Export History", command = export_history_click)
 export_history['cursor'] = 'hand2'
-export_history.pack()
+export_history.pack(pady=(0,20))
 
 print("2 Tables created")
 tabControl.bind('<<NotebookTabChanged>>', history_tab_clicked)
 
+parent.bind("<Configure>", resize)
 window.mainloop()
