@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=global-statement
+# pylint: disable=global-variable-not-assigned
 """
 Handles the GUI part of the application and transfers data between the APIs, Computation, and
 History parts of the application.
@@ -14,7 +15,7 @@ from api import API
 from history import History
 from computation import Computation
 
-def resize(event):
+def resize(event): # pylint: disable=unused-argument
     """
     Handles the event where window resizing occurs.
     """
@@ -35,7 +36,7 @@ def resize(event):
         height_ratio = 1 + ((height_ratio - 1) / 2)
         max_scale = max(width_ratio, height_ratio)
         new_font_size = int(original_font_size * max_scale)
-        
+
         # update font size of widgets
         for label in labels:
             label['font'] = ("Arial", new_font_size)
@@ -50,7 +51,7 @@ def api_click():
     Handles API selection clicks.
     """
     selection = "You selected the option " + str(api_var.get())
-    global selected_option, labelText #pylint: disable=global-variable-not-assigned
+    global selected_option, labelText
     selected_option = int(api_var.get())
     if selected_option == 1:
         labelText.set("CoinGecko API selected.")
@@ -73,7 +74,8 @@ def export_history_click():
 
     history_obj.export_history()
 
-    exportHistoryLabelText.set("History table has been exported to the Downloads folder (as a .xlsx file).")
+    exportHistoryLabelText.set("History table has been exported to " +
+    "the Downloads folder (as a .xlsx file).")
     window.update()
 
 def print_msg(msg):
@@ -249,7 +251,7 @@ def update_theme():
     - Switches to Dark Mode when current theme is Light Mode
     - Switches to Light Mode when current theme is Dark Mode
     """
-    global bgColor, textColor, themeButtonImage, darkMode, themeButton # pylint: disable=global-variable-not-assigned
+    global bgColor, textColor, themeButtonImage, darkMode, themeButton
 
     # update global variables
     if darkMode is False:
@@ -422,7 +424,8 @@ tabControl.pack(expand = 1, fill ="both")
 
 # select API label
 labelText = StringVar()
-selectAPILabel = ttk.Label(tab1, textvariable=labelText, font=("Arial", font_size), style="my.TLabel")
+selectAPILabel = ttk.Label(tab1, textvariable=labelText, font=("Arial", font_size),
+style="my.TLabel")
 labelText.set("Select an API before starting the program.")
 selectAPILabel.pack(anchor=W, padx=5, pady=(10,0))
 labels.append(selectAPILabel)
