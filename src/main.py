@@ -44,6 +44,7 @@ def resize(event): # pylint: disable=unused-argument
         style.configure("TRadiobutton", font=(None, new_font_size))
         style.configure("Treeview", font=(None, new_font_size - 1))
         style.configure("Treeview.Heading", font=(None, new_font_size))
+        style.configure("TNotebook.Tab", font=(None, new_font_size))
         font_size = new_font_size
 
 def api_click():
@@ -375,7 +376,7 @@ textColor = ''
 themeButtonImage = ''
 font_size = 10
 original_font_size = font_size
-version = (0,7,0)
+version = (0,7,1)
 
 # configure window
 window = Tk()
