@@ -376,12 +376,13 @@ textColor = ''
 themeButtonImage = ''
 font_size = 10
 original_font_size = font_size
-version = (0,7,1)
+version = (0,7,2)
 
 # configure window
 window = Tk()
 parent = window.winfo_toplevel()
 window.title("The Crypto Arbitrage Bot")
+window.iconbitmap("resources/icon.ico")
 window.configure(width=800, height=500)
 window.geometry("800x500")
 window.configure(bg=bgColor)
