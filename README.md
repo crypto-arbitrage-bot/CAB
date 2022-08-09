@@ -22,26 +22,25 @@ Open a terminal to the directory that you downloaded the release to and run the 
 
 To run the program, run the command `python main.py`
 
-
-
 ## Usage
 
-To use CAB, select a crypto exchange and press on the button labelled "Start Running" to search for profitable links
+To begin using CAB, select a crypto exchange. Once an exchange has been selected, then click "Retrieve Data" to
+retrieve data from the API and diplay profitable links for that API.
 
-![python_oaFoneOxPs](https://user-images.githubusercontent.com/65922029/181112508-07bb0277-1422-4e6a-acbb-d2bcb3f14d77.png)
-
-
-Visit the History tab to view all of the links generated this session and you can sort by Time, Exchange, and Profitability.
-
-![python_Tv7GGuGyWg](https://user-images.githubusercontent.com/65922029/181112612-49d41509-a480-40d4-b22c-41d3da649f05.png)
+![selectapi](https://user-images.githubusercontent.com/79658547/183536131-98f30020-ce86-4ecd-be1a-83e723dc926d.png)
+![home](https://user-images.githubusercontent.com/79658547/183536159-0e8efbfa-7813-459d-a9bd-83018aebc380.png)
 
 
-You can export the history into a csv file for future use. A file called `history.xlsx` wll be generated in the same directory.
+Visit the History tab to view all of the links generated this session. You can sort the history by Time, Exchange, and Profitability, Ascending or Descending.
 
-![python_EFzaHkumem](https://user-images.githubusercontent.com/65922029/181112637-de5f3822-d640-4501-b7d5-758d2b4ff536.png)
+![history](https://user-images.githubusercontent.com/79658547/183536172-40665075-19ed-4d45-8f51-ba80ffbb1762.png)
 
 
-You can also toggle between light and dark mode for the program.
+You can export the history into your Downloads folder for future use. The exported file will be saved as `history.xlsx`.
 
-![python_pgC7PeFZT2](https://user-images.githubusercontent.com/65922029/181112821-b2d59de7-ab62-45d1-b968-c427ae2af2b2.png)
-![python_IFBo2JvcHc](https://user-images.githubusercontent.com/65922029/181112843-804890fd-ea02-442e-8fea-aa25a14127ef.png)
+![exporthistory](https://user-images.githubusercontent.com/79658547/183536179-d8db1eda-9687-4850-b3ab-87de6128fef0.png)
+
+You can also switch between light and dark mode for the application.
+![lightmode](https://user-images.githubusercontent.com/79658547/183536230-728074cb-ec03-412f-afdd-23e6dda505fe.png)
+![darkmode](https://user-images.githubusercontent.com/79658547/183536236-07337a88-e19c-417a-83dd-afd47d2c1fc7.png)
+![darkmode2](https://user-images.githubusercontent.com/79658547/183536249-45bc7f6e-7229-49d2-b426-611b5b98e3f0.png)
