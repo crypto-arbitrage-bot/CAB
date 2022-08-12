@@ -376,7 +376,7 @@ textColor = ''
 themeButtonImage = ''
 font_size = 10
 original_font_size = font_size
-version = (0,7,2)
+version = (1,0,0)
 
 # configure window
 window = Tk()
